@@ -5,17 +5,38 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivityFragment">
 
-    <EditText
-        android:id="@+id/editText_artist"
-        android:layout_width="fill_parent"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/linearLayout_artists"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:hint="Artist name" />
+        android:orientation="horizontal"
+        android:layout_width="fill_parent">
+
+        <EditText
+            android:id="@+id/editText_artist"
+            android:hint="@string/editText_artist_hint"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_width="fill_parent">
+        </EditText>
+
+        <Button
+            android:id="@+id/button_search_artists"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/button_search_artists_text">
+        </Button>
+
+    </LinearLayout>
+
 
     <ListView
         android:id="@+id/listview_artists"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@id/editText_artist" />
+        android:layout_below="@id/linearLayout_artists" />
+
+
+
+
 
 </RelativeLayout>
