@@ -3,10 +3,7 @@ package com.steelgirderdev.spotifystreamer;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -14,46 +11,43 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.filters.ImageSizeFilter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Image;
+import kaaes.spotify.webapi.android.models.Track;
 
 /**
  * Created by teisentraeger on 5/31/2015.
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  */
-public class ArtistAdapter extends GenericArrayAdapter<Artist> {
+public class TrackAdapter extends GenericArrayAdapter<Track> {
 
-    public ArtistAdapter(Context context, List<Artist> objects) {
+    public TrackAdapter(Context context, List<Track> objects) {
         super(context, objects);
     }
 
-    @Override public void drawRow(TextView textView, ImageView imageView, final Artist object) {
-        textView.setText(object.name);
-        Log.v(Constants.LOG_TAG, "name:" + object.name + " pop:" + object.popularity + " #urls=" + object.images.size());
+    @Override public void drawRow(TextView textView, ImageView imageView, final Track object) {
+        textView.setText(object.name + "\n" + object.album.name);
+        Log.v(Constants.LOG_TAG, "name:" + object.name + " album:" + object.album.name + " preview_url:" + object.preview_url + " #urls=" + object.album.images.size());
         LinearLayout linearLayout = (LinearLayout) textView.getParent();
-        linearLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), TopTracks.class);
-                myIntent.putExtra(Constants.EXTRA_SPOTIFY_ID, object.id);
-                myIntent.putExtra(Constants.EXTRA_ARTIST_NAME, object.name);
-                mContext.startActivity(myIntent);
 
-            }
-        });
-
-        if(object.images.size()>0) {
+        if(object.album.images.size()>0) {
+            /*
+            Album art thumbnail (large (640px for Now Playing screen) and small (200px for list items)).
+            If the image size does not exist in the API response, you are free to choose whatever size is available.)
+             */
+            //find url with size 640 for the Now Playing screen
+            List<Image> imagesHighres = ImageSizeFilter.filterLargerThan(object.album.images, 639);
+            Log.v(Constants.LOG_TAG, "found "+imagesHighres.size()+" album highres image/s");
 
             //find url with size 300 for the list item
-            List<Image> imagesThumbnails = ImageSizeFilter.filterSmallerThan(object.images, 301);
-            Log.v(Constants.LOG_TAG, "found " + imagesThumbnails.size() + " artist thumbnail image/s");
+            List<Image> imagesThumbnails = ImageSizeFilter.filterSmallerThan(object.album.images, 301);
+            Log.v(Constants.LOG_TAG, "found " + imagesThumbnails.size() + " album thumbnail image/s");
 
             // if we have a 300 or smaller image use it for the list, otherwise simple use the first image
             if(imagesThumbnails.isEmpty()) {
-                showImage(mContext, imageView, object.images.get(0));
+                showImage(mContext, imageView, object.album.images.get(0));
             } else {
                 showImage(mContext, imageView, imagesThumbnails.get(0));
             }
@@ -74,5 +68,6 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
                 .centerInside()
                 .into(imageView);
     }
+
 
 }
