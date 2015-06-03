@@ -2,6 +2,7 @@ package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,8 +32,10 @@ public class TrackAdapter extends GenericArrayAdapter<Track> {
         // load the thumbnail is available, otherwise show a questionmark symbol
         if(track.urlThumbnail != null) {
             showImage(mContext, imageView, track.urlThumbnail);
+            imageView.setVisibility(View.VISIBLE);
         } else {
-            imageView.setImageResource(android.R.drawable.ic_menu_help);
+            //TODO: find a placeholder image to use imageView.setImageResource(android.R.drawable.ic_menu_help);
+            imageView.setVisibility(View.INVISIBLE);
         }
 
     }
@@ -41,8 +44,7 @@ public class TrackAdapter extends GenericArrayAdapter<Track> {
         Log.v(Constants.LOG_TAG, "Loading image:" + url);
         Picasso.with(context)
                 .load(url)
-                .placeholder(android.R.drawable.ic_menu_upload)
-                .error(android.R.drawable.ic_menu_close_clear_cancel)
+                //TODO: find a error and placeholder image to use .error(android.R.drawable.ic_menu_close_clear_cancel)
                 .resizeDimen(R.dimen.artists_albumWH, R.dimen.artists_albumWH)
                 .centerInside()
                 .into(imageView);

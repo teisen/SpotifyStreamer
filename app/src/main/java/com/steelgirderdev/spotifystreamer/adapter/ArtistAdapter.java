@@ -45,8 +45,10 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
         // load the thumbnail if available, otherwise show a questionmark symbol
         if(object.urlThumbnail != null) {
             showImage(mContext, imageView, object.urlThumbnail);
+            imageView.setVisibility(View.VISIBLE);
         } else {
-            imageView.setImageResource(android.R.drawable.ic_menu_help);
+            //TODO: find a placeholder image to use imageView.setImageResource();
+            imageView.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -54,8 +56,7 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
         Log.v(Constants.LOG_TAG, "Loading image:" + url);
         Picasso.with(context)
                 .load(url)
-                .placeholder(android.R.drawable.ic_menu_upload)
-                .error(android.R.drawable.ic_menu_close_clear_cancel)
+                //TODO: find a error and placeholder image to use .error(android.R.drawable.ic_menu_close_clear_cancel) .placeholder()
                 .resizeDimen(R.dimen.artists_albumWH, R.dimen.artists_albumWH)
                 .centerInside()
                 .into(imageView);
