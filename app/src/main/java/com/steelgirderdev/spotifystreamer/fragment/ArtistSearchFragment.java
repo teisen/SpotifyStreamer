@@ -25,7 +25,6 @@ import com.steelgirderdev.spotifystreamer.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -72,7 +71,7 @@ public class ArtistSearchFragment extends Fragment {
             }
         });
 
-        artists = new ArrayList<Artist>();
+        artists = new ArrayList<>();
 
         //create the arrayAdapter
         artistsAdapter = new ArtistAdapter(
@@ -103,11 +102,6 @@ public class ArtistSearchFragment extends Fragment {
 
         //set the adapte ron the found listview
         listView.setAdapter(artistsAdapter);
-
-        // Check whether we're recreating a previously destroyed instance
-        if (savedInstanceState != null) {
-
-        }
 
         return rootView;
     }
@@ -154,7 +148,7 @@ public class ArtistSearchFragment extends Fragment {
             try {
                 SpotifyApi api = new SpotifyApi();
                 SpotifyService spotify = api.getService();
-                Map<String, Object> queryMap = new HashMap<String, Object>();
+                Map<String, Object> queryMap = new HashMap<>();
                 queryMap.put(Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT_PARAMNAME, Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT);
                 ArtistsPager pager = spotify.searchArtists(params[0], queryMap);
                 Log.d(Constants.LOG_TAG, "Returned " + pager.artists.total + " artists for searchstring " + params[0]);

@@ -1,13 +1,11 @@
 package com.steelgirderdev.spotifystreamer.util;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.steelgirderdev.spotifystreamer.R;
-
 /**
  * Created by teisentraeger on 6/2/2015.
+ * Utility with common static method for UI Use
  */
 public class UIUtil {
 

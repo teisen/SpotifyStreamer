@@ -13,12 +13,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.activity.SettingsActivity;
 import com.steelgirderdev.spotifystreamer.adapter.TrackAdapter;
 import com.steelgirderdev.spotifystreamer.model.Track;
 import com.steelgirderdev.spotifystreamer.util.UIUtil;
@@ -60,7 +58,7 @@ public class TopTracksFragment extends Fragment {
         String spotifyId = getActivity().getIntent().getExtras().getString(Constants.EXTRA_SPOTIFY_ID);
         Log.v(Constants.LOG_TAG, "name:" + name + " spotifyId:" + spotifyId);
 
-        tracks = new ArrayList<Track>();
+        tracks = new ArrayList<>();
 
         //create the arrayAdapter
         trackAdapter = new TrackAdapter(
@@ -120,8 +118,10 @@ public class TopTracksFragment extends Fragment {
     private void actionBarSetup(String subtitle) {
         try {
             ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
-            ab.setDisplayHomeAsUpEnabled(true); //http://developer.android.com/training/implementing-navigation/ancestral.html
-            ab.setSubtitle(subtitle);
+            if(ab != null) {
+                ab.setDisplayHomeAsUpEnabled(true); //http://developer.android.com/training/implementing-navigation/ancestral.html
+                ab.setSubtitle(subtitle);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -139,7 +139,7 @@ public class TopTracksFragment extends Fragment {
             try {
                 SpotifyApi api = new SpotifyApi();
                 SpotifyService spotify = api.getService();
-                Map<String, Object> queryMap = new HashMap<String, Object>();
+                Map<String, Object> queryMap = new HashMap<>();
                 SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 String countryname = sharedPref.getString(Constants.PREFERENCE_KEY_COUNTRY, "");
                 queryMap.put(Constants.SPOTIFY_API_TOPTRACKS_SEARCH_COUNTRY_PARAMNAME, countryname);

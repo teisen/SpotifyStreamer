@@ -7,6 +7,7 @@ import kaaes.spotify.webapi.android.models.Image;
 
 /**
  * Created by teisentraeger on 6/1/2015.
+ * Filters The Images by size
  */
 public class ImageSizeFilter {
 
