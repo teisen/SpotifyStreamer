@@ -40,6 +40,8 @@ public class TopTracksFragment extends Fragment {
     // ProgressDialog usage http://stackoverflow.com/questions/9814821/show-progressdialog-android
     ProgressDialog progress = null;
     private ArrayList<Track> tracks;
+    private View rootView;
+    private ListView listView;
 
     public TopTracksFragment() {
     }
@@ -47,16 +49,13 @@ public class TopTracksFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         //inflate fragment layout and find UI Elements
-        final View rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
-        final TextView artistNameTextView = (TextView) rootView.findViewById(R.id.textView_toptracks_artist);
-        final ListView listView = (ListView) rootView.findViewById(R.id.listview_toptracks);
+        rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
+        listView = (ListView) rootView.findViewById(R.id.listview_toptracks);
 
         // read intent extras
         String name = getActivity().getIntent().getExtras().getString(Constants.EXTRA_ARTIST_NAME);
         String spotifyId = getActivity().getIntent().getExtras().getString(Constants.EXTRA_SPOTIFY_ID);
         Log.v(Constants.LOG_TAG, "name:" + name + " spotifyId:" + spotifyId);
-
-        artistNameTextView.setText(name);
 
         tracks = new ArrayList<Track>();
 
@@ -137,7 +136,7 @@ public class TopTracksFragment extends Fragment {
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             Map<String, Object> queryMap = new HashMap<String, Object>();
-            queryMap.put("country", "US");
+            queryMap.put(Constants.SPOTIFY_API_TOPTRACKS_SEARCH_COUNTRY_PARAMNAME, "US");
             Tracks tracks = spotify.getArtistTopTrack(params[0], queryMap);
             Log.d(Constants.LOG_TAG, "Returned " + tracks.tracks.size() + " tracks for searchstring " + params[0]);
             return tracks.tracks;
@@ -155,6 +154,8 @@ public class TopTracksFragment extends Fragment {
                     if (tracks.isEmpty()) {
                         UIUtil.toastIt(getActivity(), toast, topTracksFragment.getString(R.string.toast_search_no_results_found));
                     }
+                    trackAdapter.notifyDataSetChanged();
+                    listView.setSelection(0);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -20,12 +20,14 @@ public class Track implements Parcelable {
 
     public String trackname;
     public String albumname;
+    public String urlPreview;
     public String urlThumbnail;
     public String urlHighres;
 
     public Track(final kaaes.spotify.webapi.android.models.Track object) {
         this.trackname = object.name;
         this.albumname = object.album.name;
+        this.urlPreview = object.preview_url;
 
         if(object.album.images.size()>0) {
             /*
@@ -58,6 +60,7 @@ public class Track implements Parcelable {
     private Track(Parcel in) {
         trackname = in.readString();
         albumname = in.readString();
+        urlPreview = in.readString();
         urlThumbnail = in.readString();
         urlHighres = in.readString();
     }
@@ -71,6 +74,7 @@ public class Track implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeString(trackname);
         out.writeString(albumname);
+        out.writeString(urlPreview);
         out.writeString(urlThumbnail);
         out.writeString(urlHighres);
     }
@@ -87,6 +91,6 @@ public class Track implements Parcelable {
 
     @Override
     public String toString() {
-        return trackname + " , " + albumname + " , " + urlThumbnail + " , " + urlHighres;
+        return trackname + " , " + albumname + " , " + urlPreview + " , " + urlThumbnail + " , " + urlHighres;
     }
 }
