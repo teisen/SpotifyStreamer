@@ -12,12 +12,9 @@ import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 import com.steelgirderdev.spotifystreamer.activity.TopTracksActivity;
-import com.steelgirderdev.spotifystreamer.filter.ImageSizeFilter;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 
 import java.util.List;
-
-import kaaes.spotify.webapi.android.models.Image;
 
 /**
  * Created by teisentraeger on 5/31/2015.

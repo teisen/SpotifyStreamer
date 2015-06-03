@@ -11,7 +11,7 @@ import kaaes.spotify.webapi.android.models.Image;
 public class ImageSizeFilter {
 
     public static List<Image> filterLargerThan(List<Image> unfiltered, Integer height) {
-        List<Image> res = new ArrayList<Image>();
+        List<Image> res = new ArrayList<>();
         for (Image img : unfiltered) {
             if(img.height > height) {
                 res.add(img);
@@ -21,7 +21,7 @@ public class ImageSizeFilter {
     }
 
     public static List<Image> filterSmallerThan(List<Image> unfiltered, Integer height) {
-        List<Image> res = new ArrayList<Image>();
+        List<Image> res = new ArrayList<>();
         for (Image img : unfiltered) {
             if(img.height < height) {
                 res.add(img);
@@ -31,7 +31,7 @@ public class ImageSizeFilter {
     }
 
     public static List<Image> filterEquals(List<Image> unfiltered, Integer height) {
-        List<Image> res = new ArrayList<Image>();
+        List<Image> res = new ArrayList<>();
         for (Image img : unfiltered) {
             if(img.height.equals(height)) {
                 res.add(img);

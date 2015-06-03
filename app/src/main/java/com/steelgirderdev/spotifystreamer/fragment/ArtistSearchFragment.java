@@ -151,14 +151,18 @@ public class ArtistSearchFragment extends Fragment {
 
         @Override
         protected ArtistsPager doInBackground(String... params) {
-            SpotifyApi api = new SpotifyApi();
-            SpotifyService spotify = api.getService();
-            Map<String, Object> queryMap = new HashMap<String, Object>();
-            queryMap.put(Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT_PARAMNAME, Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT);
-            ArtistsPager pager = spotify.searchArtists(params[0], queryMap);
-            Log.d(Constants.LOG_TAG, "Returned " + pager.artists.total + " artists for searchstring " + params[0]);
-
-            return pager;
+            try {
+                SpotifyApi api = new SpotifyApi();
+                SpotifyService spotify = api.getService();
+                Map<String, Object> queryMap = new HashMap<String, Object>();
+                queryMap.put(Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT_PARAMNAME, Constants.SPOTIFY_API_ARTIST_SEARCH_LIMIT);
+                ArtistsPager pager = spotify.searchArtists(params[0], queryMap);
+                Log.d(Constants.LOG_TAG, "Returned " + pager.artists.total + " artists for searchstring " + params[0]);
+                return pager;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
@@ -179,7 +183,10 @@ public class ArtistSearchFragment extends Fragment {
                     }
                     artistsAdapter.notifyDataSetChanged();
                     listView.setSelection(0);
+                } else {
+                    UIUtil.toastIt(getActivity(), searchToast, artistSearchFragment.getString(R.string.toast_search_no_results_found));
                 }
+
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {

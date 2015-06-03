@@ -10,7 +10,6 @@ import android.widget.TextView;
 
 import com.steelgirderdev.spotifystreamer.R;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

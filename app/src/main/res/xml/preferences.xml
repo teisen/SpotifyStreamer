@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <EditTextPreference android:title="@string/setting_country_name"
+        android:key="country"
+        android:summary="Country code to use"
+        android:defaultValue="@string/setting_country_default" />
+</PreferenceScreen>

@@ -1,7 +1,9 @@
 package com.steelgirderdev.spotifystreamer.fragment;
 
 import android.app.ProgressDialog;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.activity.SettingsActivity;
 import com.steelgirderdev.spotifystreamer.adapter.TrackAdapter;
 import com.steelgirderdev.spotifystreamer.model.Track;
 import com.steelgirderdev.spotifystreamer.util.UIUtil;
@@ -133,13 +136,20 @@ public class TopTracksFragment extends Fragment {
 
         @Override
         protected List<kaaes.spotify.webapi.android.models.Track> doInBackground(String... params) {
-            SpotifyApi api = new SpotifyApi();
-            SpotifyService spotify = api.getService();
-            Map<String, Object> queryMap = new HashMap<String, Object>();
-            queryMap.put(Constants.SPOTIFY_API_TOPTRACKS_SEARCH_COUNTRY_PARAMNAME, "US");
-            Tracks tracks = spotify.getArtistTopTrack(params[0], queryMap);
-            Log.d(Constants.LOG_TAG, "Returned " + tracks.tracks.size() + " tracks for searchstring " + params[0]);
-            return tracks.tracks;
+            try {
+                SpotifyApi api = new SpotifyApi();
+                SpotifyService spotify = api.getService();
+                Map<String, Object> queryMap = new HashMap<String, Object>();
+                SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String countryname = sharedPref.getString(Constants.PREFERENCE_KEY_COUNTRY, "");
+                queryMap.put(Constants.SPOTIFY_API_TOPTRACKS_SEARCH_COUNTRY_PARAMNAME, countryname);
+                Tracks tracks = spotify.getArtistTopTrack(params[0], queryMap);
+                Log.d(Constants.LOG_TAG, "Returned " + tracks.tracks.size() + " tracks for searchstring " + params[0]);
+                return tracks.tracks;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
         }
 
         @Override
@@ -156,6 +166,8 @@ public class TopTracksFragment extends Fragment {
                     }
                     trackAdapter.notifyDataSetChanged();
                     listView.setSelection(0);
+                } else {
+                    UIUtil.toastIt(getActivity(), toast, "No tracks found or error. Did you specify the country code correctly?");
                 }
             } catch (Exception e) {
                 e.printStackTrace();

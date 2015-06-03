@@ -1,7 +1,7 @@
 package com.steelgirderdev.spotifystreamer.activity;
 
+import android.content.Intent;
 import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -40,6 +40,8 @@ public class TopTracksActivity extends AppCompatActivity {
         }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent myIntent = new Intent(this, SettingsActivity.class);
+            this.startActivity(myIntent);
             return true;
         }
 

@@ -27,7 +27,6 @@ public class TrackAdapter extends GenericArrayAdapter<Track> {
     @Override public void drawRow(TextView textView, ImageView imageView, final Track track) {
         textView.setText(track.trackname + "\n" + track.albumname);
         Log.v(Constants.LOG_TAG, track.toString());
-        LinearLayout linearLayout = (LinearLayout) textView.getParent();
 
         // load the thumbnail is available, otherwise show a questionmark symbol
         if(track.urlThumbnail != null) {
