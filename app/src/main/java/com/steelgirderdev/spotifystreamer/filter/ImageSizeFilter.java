@@ -1,13 +1,8 @@
-package com.steelgirderdev.spotifystreamer.filters;
-
-import android.util.Log;
-
-import com.steelgirderdev.spotifystreamer.Constants;
+package com.steelgirderdev.spotifystreamer.filter;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+
 import kaaes.spotify.webapi.android.models.Image;
 
 /**

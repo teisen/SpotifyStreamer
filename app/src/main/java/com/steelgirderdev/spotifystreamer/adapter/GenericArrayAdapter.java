@@ -1,4 +1,4 @@
-package com.steelgirderdev.spotifystreamer;
+package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,11 +8,14 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.steelgirderdev.spotifystreamer.R;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Found solution at http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
+ * Source http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
+ * Generic Adapter
  */
 public abstract class GenericArrayAdapter<T> extends ArrayAdapter<T> {
 

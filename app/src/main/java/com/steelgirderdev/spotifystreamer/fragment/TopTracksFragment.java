@@ -1,21 +1,24 @@
-package com.steelgirderdev.spotifystreamer;
+package com.steelgirderdev.spotifystreamer.fragment;
 
-import android.annotation.TargetApi;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.steelgirderdev.spotifystreamer.Constants;
+import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.adapter.TrackAdapter;
+import com.steelgirderdev.spotifystreamer.model.Track;
+import com.steelgirderdev.spotifystreamer.util.UIUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,19 +27,19 @@ import java.util.Map;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 
 
 /**
- * A placeholder fragment containing a simple view.
+ * Fragment that shows the Top Tracks of a given Artist
  */
 public class TopTracksFragment extends Fragment {
 
     private TrackAdapter trackAdapter;
-    private Toast searchToast;
+    private Toast toast;
     // ProgressDialog usage http://stackoverflow.com/questions/9814821/show-progressdialog-android
     ProgressDialog progress = null;
+    private ArrayList<Track> tracks;
 
     public TopTracksFragment() {
     }
@@ -55,7 +58,7 @@ public class TopTracksFragment extends Fragment {
 
         artistNameTextView.setText(name);
 
-        List<Track> tracks = new ArrayList<Track>();
+        tracks = new ArrayList<Track>();
 
         //create the arrayAdapter
         trackAdapter = new TrackAdapter(
@@ -69,41 +72,44 @@ public class TopTracksFragment extends Fragment {
                 tracks
         );
 
+        // load the tracks if resumed
+        if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS)) {
+            loadTrackList(spotifyId, name);
+        } else {
+            tracks = savedInstanceState.getParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS);
+            trackAdapter.clear();
+            for (Track track : tracks) {
+                trackAdapter.add(track);
+            }
+        }
 
-        //set the adapte ron the found listview
+        //set the adapter on the found listview
         listView.setAdapter(trackAdapter);
-
-        loadTrackList(spotifyId, name);
 
         actionBarSetup(name);
         return rootView;
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS, tracks);
+        super.onSaveInstanceState(outState);
+    }
+
     private void loadTrackList(String spotifyId, String artistName) {
         showProgressDialog(artistName);
-        FetchTopTracksTask task = new FetchTopTracksTask();
+        FetchTopTracksTask task = new FetchTopTracksTask(this);
         task.execute(spotifyId);
     }
 
-    private void showProgressDialog(String searchString) {
+    public void showProgressDialog(String searchString) {
         progress = ProgressDialog.show(getActivity(), getString(R.string.progress_dialog_searching), getString(R.string.progress_dialog_loading_top_tracks_of, searchString), true);
     }
-    private void hideProgressDialog() {
+    public void hideProgressDialog() {
         if(progress != null){
             progress.dismiss();
             progress = null;
         }
-    }
-
-    private void toastIt(CharSequence msg) {
-        //Stop any previous toasts
-        if(searchToast !=null){
-            searchToast.cancel();
-        }
-
-        //Make and display new toast
-        searchToast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
-        searchToast.show();
     }
 
     /**
@@ -119,9 +125,15 @@ public class TopTracksFragment extends Fragment {
         }
     }
 
-    public class FetchTopTracksTask extends AsyncTask<String, Void, List<Track>> {
+    public class FetchTopTracksTask extends AsyncTask<String, Void, List<kaaes.spotify.webapi.android.models.Track>> {
+        private TopTracksFragment topTracksFragment;
+
+        public FetchTopTracksTask(TopTracksFragment topTracksFragment) {
+            this.topTracksFragment = topTracksFragment;
+        }
+
         @Override
-        protected List<Track> doInBackground(String... params) {
+        protected List<kaaes.spotify.webapi.android.models.Track> doInBackground(String... params) {
             SpotifyApi api = new SpotifyApi();
             SpotifyService spotify = api.getService();
             Map<String, Object> queryMap = new HashMap<String, Object>();
@@ -132,24 +144,25 @@ public class TopTracksFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<Track> tracks) {
+        protected void onPostExecute(List<kaaes.spotify.webapi.android.models.Track> tracks) {
             super.onPostExecute(tracks);
             try {
                 if (tracks != null) {
-                    trackAdapter.clear();
-                    for (Track art : tracks) {
-                        trackAdapter.add(art);
+                    topTracksFragment.trackAdapter.clear();
+                    for (kaaes.spotify.webapi.android.models.Track track : tracks) {
+                        topTracksFragment.trackAdapter.add(new com.steelgirderdev.spotifystreamer.model.Track(track));
                     }
                     if (tracks.isEmpty()) {
-                        toastIt(getString(R.string.toast_search_no_results_found));
+                        UIUtil.toastIt(getActivity(), toast, topTracksFragment.getString(R.string.toast_search_no_results_found));
                     }
                 }
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                hideProgressDialog();
+                topTracksFragment.hideProgressDialog();
             }
 
         }
     }
+
 }

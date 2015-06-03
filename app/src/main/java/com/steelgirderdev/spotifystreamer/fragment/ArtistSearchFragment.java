@@ -1,4 +1,4 @@
-package com.steelgirderdev.spotifystreamer;
+package com.steelgirderdev.spotifystreamer.fragment;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -17,6 +17,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.steelgirderdev.spotifystreamer.Constants;
+import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.adapter.ArtistAdapter;
+import com.steelgirderdev.spotifystreamer.util.UIUtil;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +34,7 @@ import kaaes.spotify.webapi.android.models.ArtistsPager;
 /**
  * The Main Activity Fragment that shows the search for the artist and the results
  */
-public class MainActivityFragment extends Fragment {
+public class ArtistSearchFragment extends Fragment {
 
     private ArtistAdapter mArtistsAdapter;
     private Toast searchToast;
@@ -37,7 +42,7 @@ public class MainActivityFragment extends Fragment {
     // ProgressDialog usage http://stackoverflow.com/questions/9814821/show-progressdialog-android
     ProgressDialog progress = null;
 
-    public MainActivityFragment() {
+    public ArtistSearchFragment() {
     }
 
     @Override
@@ -92,11 +97,11 @@ public class MainActivityFragment extends Fragment {
 
     private void searchForArtists(EditText searchEditText) {
         if(searchString.isEmpty()) {
-            toastIt(getString(R.string.error_search_cannot_be_empty));
+            UIUtil.toastIt(getActivity(), searchToast, getString(R.string.error_search_cannot_be_empty));
             return;
         }
         showProgressDialog(searchString);
-        FetchArtistsTask task = new FetchArtistsTask();
+        FetchArtistsTask task = new FetchArtistsTask(this);
         task.execute(searchString);
         // Hide the keyboard after search
         InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -110,28 +115,23 @@ public class MainActivityFragment extends Fragment {
         super.onSaveInstanceState(savedInstanceState);
     }
 
-    private void showProgressDialog(String searchString) {
+    public void showProgressDialog(String searchString) {
         progress = ProgressDialog.show(getActivity(), getString(R.string.progress_dialog_searching), getString(R.string.progress_dialog_searching_for, searchString), true);
     }
-    private void hideProgressDialog() {
+    public void hideProgressDialog() {
         if(progress != null){
             progress.dismiss();
             progress = null;
         }
     }
 
-    private void toastIt(CharSequence msg) {
-        //Stop any previous toasts
-        if(searchToast !=null){
-            searchToast.cancel();
+    public class FetchArtistsTask extends AsyncTask<String, Void, List<Artist>> {
+        private ArtistSearchFragment artistSearchFragment;
+
+        public FetchArtistsTask(ArtistSearchFragment artistSearchFragment) {
+            this.artistSearchFragment = artistSearchFragment;
         }
 
-        //Make and display new toast
-        searchToast = Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT);
-        searchToast.show();
-    }
-
-    public class FetchArtistsTask extends AsyncTask<String, Void, List<Artist>> {
         @Override
         protected List<Artist> doInBackground(String... params) {
             SpotifyApi api = new SpotifyApi();
@@ -147,20 +147,23 @@ public class MainActivityFragment extends Fragment {
             super.onPostExecute(artists);
             try {
                 if (artists != null) {
-                    mArtistsAdapter.clear();
+                    artistSearchFragment.mArtistsAdapter.clear();
                     for (Artist art : artists) {
-                        mArtistsAdapter.add(art);
+                        artistSearchFragment.mArtistsAdapter.add(art);
                     }
                     if (artists.isEmpty()) {
-                        toastIt(getString(R.string.toast_search_no_results_found));
+                        UIUtil.toastIt(getActivity(), searchToast, artistSearchFragment.getString(R.string.toast_search_no_results_found));
                     }
                 }
-            } catch(Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                hideProgressDialog();
+                artistSearchFragment.hideProgressDialog();
             }
 
         }
     }
+
+
+
 }

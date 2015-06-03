@@ -1,20 +1,19 @@
-package com.steelgirderdev.spotifystreamer;
+package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-import com.steelgirderdev.spotifystreamer.filters.ImageSizeFilter;
+import com.steelgirderdev.spotifystreamer.Constants;
+import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.activity.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.filter.ImageSizeFilter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import kaaes.spotify.webapi.android.models.Artist;
@@ -23,6 +22,7 @@ import kaaes.spotify.webapi.android.models.Image;
 /**
  * Created by teisentraeger on 5/31/2015.
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
+ * Adapter which connect the listview with an Artist Record
  */
 public class ArtistAdapter extends GenericArrayAdapter<Artist> {
 
@@ -37,7 +37,7 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), TopTracks.class);
+                Intent myIntent = new Intent(v.getContext(), TopTracksActivity.class);
                 myIntent.putExtra(Constants.EXTRA_SPOTIFY_ID, object.id);
                 myIntent.putExtra(Constants.EXTRA_ARTIST_NAME, object.name);
                 mContext.startActivity(myIntent);
