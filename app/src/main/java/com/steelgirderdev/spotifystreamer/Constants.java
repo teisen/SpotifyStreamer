@@ -6,9 +6,10 @@ package com.steelgirderdev.spotifystreamer;
  */
 public class Constants {
     public static final String LOG_TAG = "SpotifyStreamer";
-    public static final String EXTRA_SPOTIFY_ID = "SpotifyId";
-    public static final String EXTRA_ARTIST_NAME = "ArtistName";
+    public static final String EXTRA_TOP_TRACKS = "TopTracks";
+    public static final String EXTRA_ARTIST = "Artist";
     public static final String STATE_ARTIST_NAME = "artistName";
+    public static final String PARCEL_KEY_TOPTRACKS_LIST = "toptracksList";
     public static final String PARCEL_KEY_TOPTRACKS = "toptracks";
     public static final String PARCEL_KEY_ARTISTS = "artists";
     public static final String SPOTIFY_API_ARTIST_SEARCH_LIMIT_PARAMNAME = "limit";

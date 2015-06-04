@@ -27,24 +27,23 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
         super(context, objects);
     }
 
-    @Override public void drawRow(TextView textView, ImageView imageView, final Artist object) {
-        textView.setText(object.artistname);
-        Log.v(Constants.LOG_TAG, object.toString());
+    @Override public void drawRow(TextView textView, ImageView imageView, final Artist artist) {
+        textView.setText(artist.artistname);
+        Log.v(Constants.LOG_TAG, artist.toString());
         LinearLayout linearLayout = (LinearLayout) textView.getParent();
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent myIntent = new Intent(v.getContext(), TopTracksActivity.class);
-                myIntent.putExtra(Constants.EXTRA_SPOTIFY_ID, object.spotifyId);
-                myIntent.putExtra(Constants.EXTRA_ARTIST_NAME, object.artistname);
+                myIntent.putExtra(Constants.EXTRA_ARTIST, artist);
                 mContext.startActivity(myIntent);
 
             }
         });
 
         // load the thumbnail if available, otherwise show a questionmark symbol
-        if(object.urlThumbnail != null) {
-            showImage(mContext, imageView, object.urlThumbnail);
+        if(artist.urlThumbnail != null) {
+            showImage(mContext, imageView, artist.urlThumbnail);
             imageView.setVisibility(View.VISIBLE);
         } else {
             //TODO: find a placeholder image to use imageView.setImageResource();

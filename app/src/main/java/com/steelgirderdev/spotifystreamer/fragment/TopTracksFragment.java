@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.adapter.TrackAdapter;
+import com.steelgirderdev.spotifystreamer.adapter.TopTracksAdapter;
+import com.steelgirderdev.spotifystreamer.model.Artist;
+import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.Track;
 import com.steelgirderdev.spotifystreamer.util.UIUtil;
 
@@ -36,13 +38,14 @@ import kaaes.spotify.webapi.android.models.Tracks;
  */
 public class TopTracksFragment extends Fragment {
 
-    private TrackAdapter trackAdapter;
+    private TopTracksAdapter topTracksAdapter;
     private Toast toast;
     // ProgressDialog usage http://stackoverflow.com/questions/9814821/show-progressdialog-android
     ProgressDialog progress = null;
-    private ArrayList<Track> tracks;
+    private ArrayList<TopTracks> topTracks;
     private View rootView;
     private ListView listView;
+    private Artist artist;
 
     public TopTracksFragment() {
     }
@@ -54,14 +57,13 @@ public class TopTracksFragment extends Fragment {
         listView = (ListView) rootView.findViewById(R.id.listview_toptracks);
 
         // read intent extras
-        String name = getActivity().getIntent().getExtras().getString(Constants.EXTRA_ARTIST_NAME);
-        String spotifyId = getActivity().getIntent().getExtras().getString(Constants.EXTRA_SPOTIFY_ID);
-        Log.v(Constants.LOG_TAG, "name:" + name + " spotifyId:" + spotifyId);
+        artist = (Artist) getActivity().getIntent().getExtras().get(Constants.EXTRA_ARTIST);
+        Log.v(Constants.LOG_TAG, "name:" + artist.artistname + " spotifyId:" + artist.spotifyId);
 
-        tracks = new ArrayList<>();
+        topTracks = new ArrayList<>();
 
         //create the arrayAdapter
-        trackAdapter = new TrackAdapter(
+        topTracksAdapter = new TopTracksAdapter(
                 // the current context
                 getActivity(),
                 // ID of the list item layout
@@ -69,30 +71,30 @@ public class TopTracksFragment extends Fragment {
                 // ID of the textview to populate
                 //TODO add into generic adapter def R.id.list_item_artist_textview,
                 // data
-                tracks
+                topTracks
         );
 
         // load the tracks if resumed
-        if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS)) {
-            loadTrackList(spotifyId, name);
+        if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS_LIST)) {
+            loadTrackList(artist.spotifyId, artist.artistname);
         } else {
-            tracks = savedInstanceState.getParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS);
-            trackAdapter.clear();
-            for (Track track : tracks) {
-                trackAdapter.add(track);
+            topTracks = savedInstanceState.getParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS_LIST);
+            topTracksAdapter.clear();
+            for (TopTracks track : topTracks) {
+                topTracksAdapter.add(track);
             }
         }
 
         //set the adapter on the found listview
-        listView.setAdapter(trackAdapter);
+        listView.setAdapter(topTracksAdapter);
 
-        actionBarSetup(name);
+        actionBarSetup(artist.artistname);
         return rootView;
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        outState.putParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS, tracks);
+        outState.putParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS_LIST, topTracks);
         super.onSaveInstanceState(outState);
     }
 
@@ -157,14 +159,23 @@ public class TopTracksFragment extends Fragment {
             super.onPostExecute(tracks);
             try {
                 if (tracks != null) {
-                    topTracksFragment.trackAdapter.clear();
-                    for (kaaes.spotify.webapi.android.models.Track track : tracks) {
-                        topTracksFragment.trackAdapter.add(new com.steelgirderdev.spotifystreamer.model.Track(track));
+                    topTracksFragment.topTracksAdapter.clear();
+
+                    // create alltracks object
+                    ArrayList<Track> allTracks = new ArrayList<>(tracks.size());
+                    for(int i = 0; i < tracks.size(); i++) {
+                        allTracks.add(new Track(tracks.get(i)));
                     }
+                    // set all alltracks objects to the list
+                    for(int i = 0; i < allTracks.size(); i++) {
+                        TopTracks topTrack = new TopTracks(artist, allTracks, i);
+                        topTracksFragment.topTracksAdapter.add(topTrack);
+                    }
+
                     if (tracks.isEmpty()) {
                         UIUtil.toastIt(getActivity(), toast, topTracksFragment.getString(R.string.toast_search_no_results_found));
                     }
-                    trackAdapter.notifyDataSetChanged();
+                    topTracksAdapter.notifyDataSetChanged();
                     listView.setSelection(0);
                 } else {
                     UIUtil.toastIt(getActivity(), toast, "No tracks found or error. Did you specify the country code correctly?");

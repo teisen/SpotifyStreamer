@@ -14,4 +14,8 @@
     <string name="setting_country_name">Country</string>
     <string name="setting_country_desc">Country code (2 letters - ISO 3166-1)</string>
     <string name="setting_country_default">US</string>
+
+    <string name="title_activity_player">PlayerActivity</string>
+
+    <string name="toast_could_not_play_file">Could not play the file</string>
 </resources>

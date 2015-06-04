@@ -1,6 +1,7 @@
 package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -10,6 +11,9 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.activity.PlayerActivity;
+import com.steelgirderdev.spotifystreamer.activity.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.Track;
 
 import java.util.List;
@@ -19,15 +23,25 @@ import java.util.List;
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Adapter which connect the listview with a Track
  */
-public class TrackAdapter extends GenericArrayAdapter<Track> {
+public class TopTracksAdapter extends GenericArrayAdapter<TopTracks> {
 
-    public TrackAdapter(Context context, List<Track> objects) {
+    public TopTracksAdapter(Context context, List<TopTracks> objects) {
         super(context, objects);
     }
 
-    @Override public void drawRow(TextView textView, ImageView imageView, final Track track) {
+    @Override public void drawRow(TextView textView, ImageView imageView, final TopTracks topTracks) {
+        final Track track = topTracks.getCurrentTrack();
         textView.setText(track.trackname + "\n" + track.albumname);
         Log.v(Constants.LOG_TAG, track.toString());
+        LinearLayout linearLayout = (LinearLayout) textView.getParent();
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent myIntent = new Intent(v.getContext(), PlayerActivity.class);
+                myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+                mContext.startActivity(myIntent);
+            }
+        });
 
         // load the thumbnail is available, otherwise show a questionmark symbol
         if(track.urlThumbnail != null) {
