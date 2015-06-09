@@ -18,4 +18,8 @@
     <string name="title_activity_player">PlayerActivity</string>
 
     <string name="toast_could_not_play_file">Could not play the file</string>
+    <string name="skip_prev">Previous</string>
+    <string name="play_pause">Pause</string>
+    <string name="skip_next">Next</string>
+    <string name="background_image_str">Song Image</string>
 </resources>

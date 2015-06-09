@@ -1,9 +1,7 @@
-package com.steelgirderdev.spotifystreamer.activity;
+package com.steelgirderdev.spotifystreamer.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
-
-import com.steelgirderdev.spotifystreamer.fragment.SettingsFragment;
 
 /**
  * Created by teisentraeger on 6/2/2015.

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.activity.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 
 import java.util.List;

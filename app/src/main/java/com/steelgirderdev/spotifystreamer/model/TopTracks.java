@@ -24,6 +24,28 @@ public class TopTracks implements Parcelable {
         return tracks.get(playerpos);
     }
 
+    // selects the next track and returns it. loop support
+    public Track getNextTrack() {
+        if(tracks.size() == playerpos+1) {
+            // if we are at the end of the list, loop to first
+            playerpos = 0;
+        } else {
+            playerpos++;
+        }
+        return getCurrentTrack();
+    }
+
+    // selects the next track and returns it. loop support
+    public Track getPreviousTrack() {
+        if(playerpos==0) {
+            // if we are at the beginning of the list, loop to last
+            playerpos = tracks.size()-1;
+        } else {
+            playerpos--;
+        }
+        return getCurrentTrack();
+    }
+
     private TopTracks(Parcel in) {
         artist = in.readParcelable(TopTracks.class.getClassLoader());
         tracks = in.readArrayList(TopTracks.class.getClassLoader());

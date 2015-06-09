@@ -1,4 +1,4 @@
-package com.steelgirderdev.spotifystreamer.fragment;
+package com.steelgirderdev.spotifystreamer.ui;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -189,6 +189,8 @@ public class ArtistSearchFragment extends Fragment {
 
         }
     }
+
+
 
 
 

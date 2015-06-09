@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activity.ArtistSearchActivity"
+            android:name=".ui.ArtistSearchActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" >
             <intent-filter>
@@ -22,37 +22,43 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.TopTracksActivity"
+            android:name=".ui.TopTracksActivity"
             android:label="@string/title_activity_top_tracks"
             android:launchMode="singleTask"
-            android:parentActivityName=".activity.ArtistSearchActivity" >
+            android:parentActivityName=".ui.ArtistSearchActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ArtistSearchActivity" />
+                android:value=".ui.ArtistSearchActivity" />
 >
         </activity>
         <activity
-            android:name=".activity.SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:launchMode="singleTask"
-            android:parentActivityName=".activity.ArtistSearchActivity" >
+            android:parentActivityName=".ui.ArtistSearchActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.ArtistSearchActivity" />
+                android:value=".ui.ArtistSearchActivity" />
 >
         </activity>
         <activity
-            android:name=".activity.PlayerActivity"
+            android:name=".ui.PlayerActivity"
             android:label="@string/title_activity_player"
-            android:parentActivityName=".activity.TopTracksActivity" >
+            android:parentActivityName=".ui.TopTracksActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.steelgirderdev.spotifystreamer.activity.TopTracksActivity" />
+                android:value=".ui.TopTracksActivity" />
         </activity>
+
+        <service
+            android:name=".service.MediaPlayerService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
     </application>
 
 </manifest>

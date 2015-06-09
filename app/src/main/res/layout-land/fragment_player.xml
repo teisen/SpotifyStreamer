@@ -22,16 +22,21 @@ limitations under the License.
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
 
 
     <LinearLayout
-        android:layout_width="fill_parent"
+        android:layout_width="0dip"
         android:layout_height="fill_parent"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:background="@drawable/fullscreen_bg_gradient"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_weight="1">
 
         <TextView android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -41,7 +46,6 @@ limitations under the License.
             android:id="@+id/player_textview_trackname"
             android:text="Track Name"
             android:ellipsize="end"
-            android:maxLines="1"
             android:shadowColor="@android:color/black"
             android:shadowRadius="20"
             android:textAppearance="?android:attr/textAppearanceLarge"
@@ -56,7 +60,6 @@ limitations under the License.
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
-            android:maxLines="1"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:shadowColor="@android:color/black"
             android:shadowRadius="20"
@@ -73,27 +76,29 @@ limitations under the License.
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
-            android:maxLines="1"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:shadowColor="@android:color/black"
             android:shadowRadius="20"
             android:textColor="@color/fullscreen_secondary_line_color"/>
 
-        <ImageView
-            android:layout_width="fill_parent"
-            android:layout_height="@dimen/player_highresWH"
-            android:gravity="center_horizontal"
-            android:id="@+id/player_highresimage"
-            android:src="@mipmap/ic_launcher" />
+    </LinearLayout>
 
 
 
 
         <LinearLayout
-            android:layout_width="match_parent"
+            android:layout_width="0dip"
             android:layout_height="fill_parent"
             android:gravity="bottom"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="2">
+
+            <ImageView
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/player_highresWH"
+                android:gravity="center_horizontal"
+                android:id="@+id/player_highresimage"
+                android:src="@mipmap/ic_launcher" />
 
             <LinearLayout
                 android:layout_width="match_parent"

@@ -1,4 +1,4 @@
-package com.steelgirderdev.spotifystreamer.fragment;
+package com.steelgirderdev.spotifystreamer.ui;
 
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
