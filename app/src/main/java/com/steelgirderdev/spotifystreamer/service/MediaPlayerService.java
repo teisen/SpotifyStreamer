@@ -1,10 +1,13 @@
 package com.steelgirderdev.spotifystreamer.service;
 
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
@@ -167,7 +170,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         wifiLock.acquire();
 
         // set the service in foreground
-        setForeground(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
+        //setForeground(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
+        createNotification(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
 
         mMediaPlayer.prepareAsync(); // will call OnPreparedListener
     }
@@ -240,6 +244,54 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         startForeground(Constants.NOTIFICATION_ID_PLAYER, notification);
     }
 
+    public void createNotification(String songName, String artistname) {
+        // Prepare intent which is triggered if the
+        // notification is selected
+        Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TopTracks restoreTopTracks = topTracks.createClone();
+        restoreTopTracks.command = Constants.ACTION_NONE;
+        restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+        restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
+        PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, 0);
+
+        Intent prevIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TopTracks prevTopTracks = topTracks.createClone();
+        prevTopTracks.command = Constants.ACTION_PREVIOUS;
+        prevIntent.putExtra(Constants.EXTRA_TOP_TRACKS, prevTopTracks);
+        PendingIntent prevPi = PendingIntent.getActivity(getApplicationContext(), 1, prevIntent, 0);
+
+        Intent playPauseIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TopTracks playPauseTopTracks = topTracks.createClone();
+        playPauseTopTracks.command = Constants.ACTION_PLAYPAUSETOGGLE;
+        playPauseIntent.putExtra(Constants.EXTRA_TOP_TRACKS, playPauseTopTracks);
+        PendingIntent playPausePi = PendingIntent.getActivity(getApplicationContext(), 2, playPauseIntent, 0);
+
+        Intent nextIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TopTracks nextTopTracks = topTracks.createClone();
+        nextTopTracks.command = Constants.ACTION_NEXT;
+        nextIntent.putExtra(Constants.EXTRA_TOP_TRACKS, nextTopTracks);
+        PendingIntent nextPi = PendingIntent.getActivity(getApplicationContext(), 3, nextIntent, 0);
+
+        // Build notification
+        // Actions are just fake
+        Notification noti = new Notification.Builder(this)
+                .setContentTitle(songName)
+                .setContentText(artistname)
+                .setSmallIcon(android.R.drawable.ic_btn_speak_now)
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.abc_ic_commit_search_api_mtrl_alpha))
+                .setContentIntent(pi)
+                .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", prevPi)
+                .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", playPausePi)
+                .addAction(R.drawable.ic_skip_next_white_48dp, "Next", nextPi)
+                .build();
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        // hide the notification after its selected
+        noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+        notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
+
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -247,7 +299,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         //When you pause or stop your media, or when you no longer need the network, you should release the lock:
         wifiLock.release();
         // stop the foreground mode and delete notification
-        stopForeground(true);
+        //Currently not foreground stopForeground(true);
     }
 
     public class ProgressHandler extends AsyncTask<Void, Void, Void> {

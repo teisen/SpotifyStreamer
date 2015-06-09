@@ -168,7 +168,7 @@ public class TopTracksFragment extends Fragment {
                     }
                     // set all alltracks objects to the list
                     for(int i = 0; i < allTracks.size(); i++) {
-                        TopTracks topTrack = new TopTracks(artist, allTracks, i);
+                        TopTracks topTrack = new TopTracks(artist, allTracks, i, Constants.ACTION_PLAY);
                         topTracksFragment.topTracksAdapter.add(topTrack);
                     }
 

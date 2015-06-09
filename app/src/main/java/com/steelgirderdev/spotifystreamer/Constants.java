@@ -9,6 +9,7 @@ public class Constants {
     public static final String EXTRA_TOP_TRACKS = "TopTracks";
     public static final String EXTRA_ARTIST = "Artist";
     public static final String EXTRA_SEEK_TO_MILLIS = "SeekToMs";
+    public static final String EXTRA_PLAYER_COMMAND = "PlayerCommand";
     public static final String STATE_ARTIST_NAME = "artistName";
     public static final String PARCEL_KEY_TOPTRACKS_LIST = "toptracksList";
     public static final String PARCEL_KEY_TOPTRACKS = "toptracks";
@@ -29,6 +30,7 @@ public class Constants {
     public static final String ACTION_PLAYPAUSETOGGLE = "com.steelgirderdev.spotifystreamer.service.action.PLAYPAUSETOGGLE";
     public static final String ACTION_PREVIOUS = "com.steelgirderdev.spotifystreamer.service.action.PREVIOUS";
     public static final String ACTION_NEXT = "com.steelgirderdev.spotifystreamer.service.action.NEXT";
+    public static final String ACTION_NONE = "com.steelgirderdev.spotifystreamer.service.action.NONE";
     public static final String ACTION_STOP = "com.steelgirderdev.spotifystreamer.service.action.STOP";
     public static final String ACTION_STOP_PROGRESS_UPDATE = "com.steelgirderdev.spotifystreamer.service.action.STOP_PROGRESS_UPDATE";
     public static final String ACTION_SEEK_TO = "com.steelgirderdev.spotifystreamer.service.action.SEEK_TO";

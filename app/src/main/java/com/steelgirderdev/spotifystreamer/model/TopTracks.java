@@ -13,11 +13,13 @@ public class TopTracks implements Parcelable {
     public Artist artist;
     public ArrayList<Track> tracks;
     public int playerpos;
+    public String command;
 
-    public TopTracks(final Artist artist, final ArrayList<Track> tracks, final int playerpos) {
+    public TopTracks(final Artist artist, final ArrayList<Track> tracks, final int playerpos, final String command) {
         this.artist = artist;
         this.tracks = tracks;
         this.playerpos = playerpos;
+        this.command = command;
     }
 
     public Track getCurrentTrack() {
@@ -50,6 +52,7 @@ public class TopTracks implements Parcelable {
         artist = in.readParcelable(TopTracks.class.getClassLoader());
         tracks = in.readArrayList(TopTracks.class.getClassLoader());
         playerpos = in.readInt();
+        command = in.readString();
     }
 
     @Override
@@ -62,6 +65,7 @@ public class TopTracks implements Parcelable {
         out.writeParcelable(artist, flags);
         out.writeList(tracks);
         out.writeInt(playerpos);
+        out.writeString(command);
     }
 
     public static final Parcelable.Creator<TopTracks> CREATOR = new Parcelable.Creator<TopTracks>() {
@@ -76,10 +80,15 @@ public class TopTracks implements Parcelable {
 
     @Override
     public String toString() {
-        String ret = artist.toString() + ", " + playerpos;
+        String ret = artist.toString() + ", " + playerpos + ", \n" +command + "\n";
         for(Track t : tracks) {
             ret += "\n" + t.toString();
         }
         return ret;
+    }
+
+    public TopTracks createClone() {
+        TopTracks clone = new TopTracks(artist, tracks, playerpos, command);
+        return clone;
     }
 }

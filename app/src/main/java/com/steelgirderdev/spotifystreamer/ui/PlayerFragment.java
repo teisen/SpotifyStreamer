@@ -88,10 +88,13 @@ public class PlayerFragment extends Fragment {
         if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS)) {
             // read intent extras
             topTracks = (TopTracks) getActivity().getIntent().getExtras().get(Constants.EXTRA_TOP_TRACKS);
-            Log.v(Constants.LOG_TAG, "Loaded " + topTracks.toString());
+            Log.v(Constants.LOG_TAG, "Intent Extras: " + topTracks.toString());
+            executeCommand();
         } else {
             // restore topTracks object
             topTracks = savedInstanceState.getParcelable(Constants.PARCEL_KEY_TOPTRACKS);
+            Log.v(Constants.LOG_TAG, "Restore Intent Extras: " + topTracks.toString());
+            executeCommand();
         }
 
         // receiver that updates the current track progress on the UI from the service.
@@ -99,7 +102,7 @@ public class PlayerFragment extends Fragment {
             @Override
             public void onReceive(Context context, Intent intent) {
                 TrackUiUpdate uiUpdate = (TrackUiUpdate) intent.getExtras().get(Constants.PARCEL_KEY_TRACK_UI_UPDATE);
-                Log.v(Constants.LOG_TAG, "onReceive update " + uiUpdate.toString());
+                //Log.v(Constants.LOG_TAG, "onReceive update " + uiUpdate.toString());
                 seekBarPlayer.setProgress(uiUpdate.trackpos);
                 if(topTracks.playerpos != uiUpdate.playerpos) {
                     // if the service sent that the current pos has changes, update the view
@@ -114,7 +117,7 @@ public class PlayerFragment extends Fragment {
             }
         };
 
-        playerServiceAction(Constants.ACTION_PLAY_IF_NOT_PLAYING);
+
         imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_48dp);
 
         // set data to UI
@@ -175,6 +178,38 @@ public class PlayerFragment extends Fragment {
         return rootView;
     }
 
+    private void executeCommand() {
+        if(topTracks.command!=null) {
+
+            switch (topTracks.command) {
+                case (Constants.ACTION_NONE): {
+                    // do nothing
+                    break;
+                }
+                case (Constants.ACTION_PREVIOUS): {
+                    playerServiceAction(Constants.ACTION_PREVIOUS);
+                    break;
+                }
+                case (Constants.ACTION_PLAY): {
+                    playerServiceAction(Constants.ACTION_PLAY);
+                    break;
+                }
+                case (Constants.ACTION_PLAYPAUSETOGGLE): {
+                    playerServiceAction(Constants.ACTION_PLAYPAUSETOGGLE);
+                    break;
+                }
+                case (Constants.ACTION_NEXT): {
+                    playerServiceAction(Constants.ACTION_NEXT);
+                    break;
+                }
+                default: {
+                    // do nothing
+                    break;
+                }
+            }
+        }
+    }
+
     private void setDataToUI(TextView textViewTrackName, TextView textViewArtist, TextView textViewAlbum, ImageView imageViewHighresImage) {
         textViewTrackName.setText(topTracks.getCurrentTrack().trackname);
         textViewArtist.setText(topTracks.artist.artistname);
@@ -192,6 +227,7 @@ public class PlayerFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
+        topTracks.command = Constants.ACTION_NONE;
         outState.putParcelable(Constants.PARCEL_KEY_TOPTRACKS, topTracks);
         super.onSaveInstanceState(outState);
     }

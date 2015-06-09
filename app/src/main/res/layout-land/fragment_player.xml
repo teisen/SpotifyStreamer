@@ -42,25 +42,12 @@ limitations under the License.
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/activity_vertical_margin"
             android:paddingTop="@dimen/activity_vertical_margin"
-            android:gravity="center_horizontal"
-            android:id="@+id/player_textview_trackname"
-            android:text="Track Name"
-            android:ellipsize="end"
-            android:shadowColor="@android:color/black"
-            android:shadowRadius="20"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="@color/fullscreen_line_color"/>
-
-        <TextView android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/activity_vertical_margin"
-            android:paddingTop="@dimen/activity_vertical_margin"
             android:id="@+id/player_textview_artist"
             android:text="Artist Name"
             android:ellipsize="end"
             android:fontFamily="sans-serif-light"
             android:gravity="center_horizontal"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:shadowColor="@android:color/black"
             android:shadowRadius="20"
             android:textColor="@color/fullscreen_secondary_line_color"/>
@@ -80,6 +67,19 @@ limitations under the License.
             android:shadowColor="@android:color/black"
             android:shadowRadius="20"
             android:textColor="@color/fullscreen_secondary_line_color"/>
+
+        <TextView android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            android:gravity="center_horizontal"
+            android:id="@+id/player_textview_trackname"
+            android:text="Track Name"
+            android:ellipsize="end"
+            android:shadowColor="@android:color/black"
+            android:shadowRadius="20"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="@color/fullscreen_line_color"/>
 
     </LinearLayout>
 
