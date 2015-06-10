@@ -91,6 +91,6 @@ public class Artist implements Parcelable {
 
     @Override
     public String toString() {
-        return artistname + " , " + spotifyId + " , " + popularity + " , " + urlThumbnail + " , " + urlHighres;
+        return artistname + " , " + spotifyId + " , " + popularity;
     }
 }

@@ -25,11 +25,13 @@ public class Constants {
     public static final String BROADCAST_INTENT_TRACKUIUPDATE = "BroadCastTRACKUIUPDATE";
 
     //actions
-    public static final String ACTION_PLAY = "com.steelgirderdev.spotifystreamer.service.action.PLAY";
     public static final String ACTION_PLAY_IF_NOT_PLAYING = "com.steelgirderdev.spotifystreamer.service.action.PLAYIFNOTPLAYING";
     public static final String ACTION_PLAYPAUSETOGGLE = "com.steelgirderdev.spotifystreamer.service.action.PLAYPAUSETOGGLE";
+    public static final String ACTION_PLAY = "com.steelgirderdev.spotifystreamer.service.action.PLAY";
     public static final String ACTION_PREVIOUS = "com.steelgirderdev.spotifystreamer.service.action.PREVIOUS";
     public static final String ACTION_NEXT = "com.steelgirderdev.spotifystreamer.service.action.NEXT";
+    public static final String ACTION_PREVIOUS_FROM_NOTIFICATION = "com.steelgirderdev.spotifystreamer.service.action.PREVIOUS_FROM_NOTIFICATION";
+    public static final String ACTION_NEXT_FROM_NOTIFICATION = "com.steelgirderdev.spotifystreamer.service.action.NEXT_FROM_NOTIFICATION";
     public static final String ACTION_NONE = "com.steelgirderdev.spotifystreamer.service.action.NONE";
     public static final String ACTION_STOP = "com.steelgirderdev.spotifystreamer.service.action.STOP";
     public static final String ACTION_STOP_PROGRESS_UPDATE = "com.steelgirderdev.spotifystreamer.service.action.STOP_PROGRESS_UPDATE";

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.wifi.WifiManager;
@@ -16,13 +17,19 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.TrackUiUpdate;
 import com.steelgirderdev.spotifystreamer.ui.PlayerActivity;
 import com.steelgirderdev.spotifystreamer.util.MediaPlayerStateWrapper;
+
+import java.io.IOException;
+import java.util.Set;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnErrorListener {
     private LocalBroadcastManager broadcaster;
@@ -50,12 +57,20 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         if(intent!=null && intent.getAction()!=null) {
             Log.v(Constants.LOG_TAG, "mp:" + mMediaPlayer.hashCode() + " action= " + intent.getAction());
+
+            Set<String> keys = intent.getExtras().keySet();
+            for(String key : keys) {
+                Log.v(Constants.LOG_TAG, "Key:" + key);
+            }
+
             switch (intent.getAction()) {
 
                 case Constants.ACTION_PLAY: {
                     try {
                         // load topTracks from the Intent
-                        topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        if(intent.hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                            topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        }
                         playCurrentTrack();
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
@@ -66,7 +81,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 case Constants.ACTION_PLAY_IF_NOT_PLAYING: {
                     try {
                         // load topTracks from the Intent
-                        topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        if(intent.hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                            topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        }
                         if(mMediaPlayer.isPlayingSave() == false) {
                             playCurrentTrack();
                         }
@@ -79,9 +96,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 case Constants.ACTION_NEXT: {
                     try {
                         // load topTracks from the Intent
-                        topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        if(intent.hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                            topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        }
                         topTracks.getNextTrack();
                         playCurrentTrack();
+                    } catch (IllegalArgumentException iae) {
+                        iae.printStackTrace();
+                        //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
+                    }
+                    break;
+                }
+                case Constants.ACTION_NEXT_FROM_NOTIFICATION: {
+                    try {
+                        topTracks.getNextTrack();
+                        playCurrentTrack();
+                        Log.v(Constants.LOG_TAG, intent.getAction() + " " + topTracks.toString());
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
                         //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
@@ -91,9 +121,23 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 case Constants.ACTION_PREVIOUS: {
                     try {
                         // load topTracks from the Intent
-                        topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        if(intent.hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                            topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                        }
                         topTracks.getPreviousTrack();
                         playCurrentTrack();
+                        Log.v(Constants.LOG_TAG, intent.getAction() + " " + topTracks.toString());
+                    } catch (IllegalArgumentException iae) {
+                        iae.printStackTrace();
+                        //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
+                    }
+                    break;
+                }
+                case Constants.ACTION_PREVIOUS_FROM_NOTIFICATION: {
+                    try {
+                        topTracks.getPreviousTrack();
+                        playCurrentTrack();
+                        Log.v(Constants.LOG_TAG, intent.getAction() + " " + topTracks.toString());
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
                         //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
@@ -104,7 +148,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                     try {
                         if (mMediaPlayer.isPlaying()) {
                             mMediaPlayer.pause();
-
                             //When you pause or stop your media, or when you no longer need the network, you should release the lock:
                             wifiLock.release();
                         } else {
@@ -171,7 +214,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         // set the service in foreground
         //setForeground(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
-        createNotification(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
+
+        createNotification(topTracks);
 
         mMediaPlayer.prepareAsync(); // will call OnPreparedListener
     }
@@ -227,71 +271,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         return wifiLock;
     }
 
-    private void setForeground(String songName, String artistname) {
-        // assign the song name to songName
-        Intent myIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-        myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-        PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0,
-                myIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-        Notification notification = new Notification();
-        notification.tickerText = "abcd";
-        notification.icon = R.drawable.ic_play_arrow_black_36dp;
-        notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        notification.setLatestEventInfo(getApplicationContext(), artistname,
-                songName, pi);
-
-        startForeground(Constants.NOTIFICATION_ID_PLAYER, notification);
-    }
-
-    public void createNotification(String songName, String artistname) {
-        // Prepare intent which is triggered if the
-        // notification is selected
-        Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-        TopTracks restoreTopTracks = topTracks.createClone();
-        restoreTopTracks.command = Constants.ACTION_NONE;
-        restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-        restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
-        PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, 0);
-
-        Intent prevIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-        TopTracks prevTopTracks = topTracks.createClone();
-        prevTopTracks.command = Constants.ACTION_PREVIOUS;
-        prevIntent.putExtra(Constants.EXTRA_TOP_TRACKS, prevTopTracks);
-        PendingIntent prevPi = PendingIntent.getActivity(getApplicationContext(), 1, prevIntent, 0);
-
-        Intent playPauseIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-        TopTracks playPauseTopTracks = topTracks.createClone();
-        playPauseTopTracks.command = Constants.ACTION_PLAYPAUSETOGGLE;
-        playPauseIntent.putExtra(Constants.EXTRA_TOP_TRACKS, playPauseTopTracks);
-        PendingIntent playPausePi = PendingIntent.getActivity(getApplicationContext(), 2, playPauseIntent, 0);
-
-        Intent nextIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-        TopTracks nextTopTracks = topTracks.createClone();
-        nextTopTracks.command = Constants.ACTION_NEXT;
-        nextIntent.putExtra(Constants.EXTRA_TOP_TRACKS, nextTopTracks);
-        PendingIntent nextPi = PendingIntent.getActivity(getApplicationContext(), 3, nextIntent, 0);
-
-        // Build notification
-        // Actions are just fake
-        Notification noti = new Notification.Builder(this)
-                .setContentTitle(songName)
-                .setContentText(artistname)
-                .setSmallIcon(android.R.drawable.ic_btn_speak_now)
-                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.abc_ic_commit_search_api_mtrl_alpha))
-                .setContentIntent(pi)
-                .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", prevPi)
-                .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", playPausePi)
-                .addAction(R.drawable.ic_skip_next_white_48dp, "Next", nextPi)
-                .build();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        // hide the notification after its selected
-        noti.flags |= Notification.FLAG_AUTO_CANCEL;
-
-        notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
-
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -339,4 +318,62 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         }
 
     }
+
+    public void createNotification(final TopTracks topTracks) {
+
+        Target target2 = new Target() {
+            @Override
+            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                // Prepare intent which is triggered if the
+                // notification is selected
+                Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+                TopTracks restoremTopTracks = topTracks.createClone();
+                restoremTopTracks.command = Constants.ACTION_NONE;
+                restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+                restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
+                final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, 0);
+
+                // Build notification
+                Notification noti = new Notification.Builder(getApplicationContext())
+                        .setContentTitle(topTracks.getCurrentTrack().trackname)
+                        .setContentText(topTracks.artist.artistname)
+                        .setSmallIcon(android.R.drawable.ic_media_play)
+                        .setLargeIcon(bitmap)
+                        .setContentIntent(pi)
+                        .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
+                        .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
+                        .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
+                        .build();
+                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                // hide the notification after its selected
+                noti.flags |= Notification.FLAG_AUTO_CANCEL;
+
+                notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
+            }
+
+            private PendingIntent getPendingIntent(String action, int requestCode) {
+                Intent serviceIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
+                serviceIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+                serviceIntent.setAction(action);
+                return PendingIntent.getService(getApplicationContext(), requestCode, serviceIntent, 0);
+            }
+
+            @Override
+            public void onBitmapFailed(Drawable errorDrawable) {
+                Log.e(Constants.LOG_TAG, "Could not load Bitmap");
+            }
+
+            @Override
+            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                Log.v(Constants.LOG_TAG, "onPrepareLoad");
+            }
+        };
+
+        Picasso.with(this)
+                .load(topTracks.getCurrentTrack().urlHighres)
+                .into(target2);
+
+    }
+
+
 }

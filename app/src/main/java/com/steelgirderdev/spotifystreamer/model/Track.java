@@ -91,6 +91,6 @@ public class Track implements Parcelable {
 
     @Override
     public String toString() {
-        return trackname + " , " + albumname + " , " + urlPreview + " , " + urlThumbnail + " , " + urlHighres;
+        return trackname + ", " + albumname;
     }
 }
