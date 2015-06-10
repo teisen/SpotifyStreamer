@@ -2,6 +2,7 @@ package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,8 +12,10 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.ui.ArtistSearchActivity;
 import com.steelgirderdev.spotifystreamer.model.Artist;
+import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.ui.TopTracksFragment;
 
 import java.util.List;
 
@@ -21,9 +24,9 @@ import java.util.List;
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Adapter which connect the listview with an Artist Record
  */
-public class ArtistAdapter extends GenericArrayAdapter<Artist> {
+public class ArtistAdapter extends GenericArrayAdapter<Artist, AppCompatActivity> {
 
-    public ArtistAdapter(Context context, List<Artist> objects) {
+    public ArtistAdapter(AppCompatActivity context, List<Artist> objects) {
         super(context, objects);
     }
 
@@ -34,9 +37,22 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist> {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), TopTracksActivity.class);
-                myIntent.putExtra(Constants.EXTRA_ARTIST, artist);
-                mContext.startActivity(myIntent);
+                boolean twoPane = false;
+                if(mContext instanceof ArtistSearchActivity) {
+                    if(((ArtistSearchActivity) mContext).findViewById(R.id.fragment_detail_toptracks) != null) {
+                        twoPane = true;
+                    }
+                }
+                if(twoPane) {
+                    TopTracksFragment ttf = (TopTracksFragment) mContext.getSupportFragmentManager().findFragmentById(R.id.fragment_detail_toptracks);
+                    if (ttf != null) {
+                        ttf.loadTrackList(artist.spotifyId, artist.artistname);
+                    }
+                } else {
+                    Intent myIntent = new Intent(v.getContext(), TopTracksActivity.class);
+                    myIntent.putExtra(Constants.EXTRA_ARTIST, artist);
+                    mContext.startActivity(myIntent);
+                }
 
             }
         });

@@ -1,6 +1,8 @@
 package com.steelgirderdev.spotifystreamer.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +18,14 @@ import java.util.List;
  * Source http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Generic Adapter
  */
-public abstract class GenericArrayAdapter<T> extends ArrayAdapter<T> {
+public abstract class GenericArrayAdapter<T, C> extends ArrayAdapter<T> {
 
     // Vars
     private LayoutInflater mInflater;
-    Context mContext;
+    C mContext;
 
-    public GenericArrayAdapter(Context context, List<T> objects) {
-        super(context, 0, objects);
+    public GenericArrayAdapter(C context, List<T> objects) {
+        super((Activity) context, 0, objects);
         mContext = context;
         init(context);
     }
@@ -31,8 +33,8 @@ public abstract class GenericArrayAdapter<T> extends ArrayAdapter<T> {
     // Headers
     public abstract void drawRow(TextView textView, ImageView imageView, T object);
 
-    private void init(Context context) {
-        this.mInflater = LayoutInflater.from(context);
+    private void init(C context) {
+        this.mInflater = LayoutInflater.from((Activity) context);
     }
 
     @Override public View getView(int position, View convertView, ViewGroup parent) {

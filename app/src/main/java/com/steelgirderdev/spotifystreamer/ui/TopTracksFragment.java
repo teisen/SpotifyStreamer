@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -56,16 +57,19 @@ public class TopTracksFragment extends Fragment {
         rootView = inflater.inflate(R.layout.fragment_top_tracks, container, false);
         listView = (ListView) rootView.findViewById(R.id.listview_toptracks);
 
-        // read intent extras
-        artist = (Artist) getActivity().getIntent().getExtras().get(Constants.EXTRA_ARTIST);
-        Log.v(Constants.LOG_TAG, "name:" + artist.artistname + " spotifyId:" + artist.spotifyId);
+        if(getActivity().getIntent().hasExtra(Constants.EXTRA_ARTIST)) {
+
+            // read intent extras
+            artist = (Artist) getActivity().getIntent().getExtras().get(Constants.EXTRA_ARTIST);
+            Log.v(Constants.LOG_TAG, "name:" + artist.artistname + " spotifyId:" + artist.spotifyId);
+        }
 
         topTracks = new ArrayList<>();
 
         //create the arrayAdapter
         topTracksAdapter = new TopTracksAdapter(
                 // the current context
-                getActivity(),
+                (AppCompatActivity) getActivity(),
                 // ID of the list item layout
                 //TODO add into generic adapter def R.layout.list_item_artist,
                 // ID of the textview to populate
@@ -74,9 +78,14 @@ public class TopTracksFragment extends Fragment {
                 topTracks
         );
 
+
+
+
         // load the tracks if resumed
-        if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS_LIST)) {
-            loadTrackList(artist.spotifyId, artist.artistname);
+        if (savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS_LIST)) {
+            if(artist != null) {
+                loadTrackList(artist.spotifyId, artist.artistname);
+            }
         } else {
             topTracks = savedInstanceState.getParcelableArrayList(Constants.PARCEL_KEY_TOPTRACKS_LIST);
             topTracksAdapter.clear();
@@ -88,7 +97,9 @@ public class TopTracksFragment extends Fragment {
         //set the adapter on the found listview
         listView.setAdapter(topTracksAdapter);
 
-        actionBarSetup(artist.artistname);
+        actionBarSetup(artist);
+
+
         return rootView;
     }
 
@@ -98,10 +109,11 @@ public class TopTracksFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    private void loadTrackList(String spotifyId, String artistName) {
+    public void loadTrackList(String spotifyId, String artistName) {
         showProgressDialog(artistName);
         FetchTopTracksTask task = new FetchTopTracksTask(this);
         task.execute(spotifyId);
+        actionBarSetup(artist);
     }
 
     public void showProgressDialog(String searchString) {
@@ -117,16 +129,22 @@ public class TopTracksFragment extends Fragment {
     /**
      * Sets the Action Bar title
      */
-    private void actionBarSetup(String subtitle) {
+    private void actionBarSetup(Artist art) {
         try {
             ActionBar ab = ((AppCompatActivity) getActivity()).getSupportActionBar();
             if(ab != null) {
                 ab.setDisplayHomeAsUpEnabled(true); //http://developer.android.com/training/implementing-navigation/ancestral.html
-                ab.setSubtitle(subtitle);
+                if(art != null) {
+                    ab.setSubtitle(art.artistname);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public void loadData(Artist artist) {
+
     }
 
     public class FetchTopTracksTask extends AsyncTask<String, Void, List<kaaes.spotify.webapi.android.models.Track>> {

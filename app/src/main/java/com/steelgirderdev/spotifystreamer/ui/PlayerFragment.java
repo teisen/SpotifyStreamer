@@ -87,9 +87,13 @@ public class PlayerFragment extends Fragment {
         // load the tracks if resumed
         if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS)) {
             // read intent extras
-            topTracks = (TopTracks) getActivity().getIntent().getExtras().get(Constants.EXTRA_TOP_TRACKS);
-            Log.v(Constants.LOG_TAG, "Intent Extras: " + topTracks.toString());
-            executeCommand();
+            if(getActivity().getIntent().hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                topTracks = (TopTracks) getActivity().getIntent().getExtras().get(Constants.EXTRA_TOP_TRACKS);
+                Log.v(Constants.LOG_TAG, "Intent Extras: " + topTracks.toString());
+                executeCommand();
+            } else {
+                Log.v(Constants.LOG_TAG,"NO EXTRA DEFINED WITH KEY "+Constants.EXTRA_TOP_TRACKS);
+            }
         } else {
             // restore topTracks object
             topTracks = savedInstanceState.getParcelable(Constants.PARCEL_KEY_TOPTRACKS);

@@ -5,6 +5,8 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -76,7 +78,7 @@ public class ArtistSearchFragment extends Fragment {
         //create the arrayAdapter
         artistsAdapter = new ArtistAdapter(
                 // the current context
-                getActivity(),
+                (AppCompatActivity) getActivity(),
                 // ID of the list item layout
                 //TODO add into generic adapter def R.layout.list_item_artist,
                 // ID of the textview to populate

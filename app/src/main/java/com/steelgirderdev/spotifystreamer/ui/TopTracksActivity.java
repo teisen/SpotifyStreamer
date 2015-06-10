@@ -14,10 +14,30 @@ import com.steelgirderdev.spotifystreamer.R;
  */
 public class TopTracksActivity extends AppCompatActivity {
 
+    public boolean mTwoPane;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_top_tracks);
+        //if(savedInstanceState == null) {
+        //    getSupportFragmentManager().beginTransaction()
+        //            .add(R.id.fragment_detail_toptracks, new TopTracksFragment())
+        //            .commit();
+        //}
+        if(findViewById(R.id.fragment_artistsearch) != null) {
+            // The detail container will only be present when we are in two-fragment layout (Tablet)
+            mTwoPane = true;
+
+            //add or replace the detail fragment
+            if(savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_detail_toptracks, new TopTracksFragment())
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
     }
 
 

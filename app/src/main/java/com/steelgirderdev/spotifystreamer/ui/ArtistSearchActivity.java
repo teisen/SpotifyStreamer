@@ -14,11 +14,26 @@ import com.steelgirderdev.spotifystreamer.R;
  */
 public class ArtistSearchActivity extends AppCompatActivity {
 
+    public boolean mTwoPane;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         PreferenceManager.setDefaultValues(this, R.xml.preferences, false);
         setContentView(R.layout.activity_main);
+        if(findViewById(R.id.fragment_detail_toptracks) != null) {
+            // The detail container will only be present when we are in two-fragment layout (Tablet)
+            mTwoPane = true;
+
+            //add or replace the detail fragment
+            if(savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_detail_toptracks, new TopTracksFragment())
+                        .commit();
+            }
+        } else {
+            mTwoPane = false;
+        }
     }
 
 

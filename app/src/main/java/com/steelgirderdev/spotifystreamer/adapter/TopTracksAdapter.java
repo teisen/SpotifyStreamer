@@ -2,6 +2,7 @@ package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -11,9 +12,11 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.ui.ArtistSearchActivity;
 import com.steelgirderdev.spotifystreamer.ui.PlayerActivity;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.Track;
+import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
 
 import java.util.List;
 
@@ -22,9 +25,9 @@ import java.util.List;
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Adapter which connect the listview with a Track
  */
-public class TopTracksAdapter extends GenericArrayAdapter<TopTracks> {
+public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, AppCompatActivity> {
 
-    public TopTracksAdapter(Context context, List<TopTracks> objects) {
+    public TopTracksAdapter(AppCompatActivity context, List<TopTracks> objects) {
         super(context, objects);
     }
 
@@ -36,9 +39,24 @@ public class TopTracksAdapter extends GenericArrayAdapter<TopTracks> {
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent myIntent = new Intent(v.getContext(), PlayerActivity.class);
-                myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-                mContext.startActivity(myIntent);
+                boolean twoPane = false;
+                if(mContext instanceof TopTracksActivity) {
+                    if(((TopTracksActivity) mContext).findViewById(R.id.fragment_artistsearch) != null) {
+                        twoPane = true;
+                    }
+                } else if(mContext instanceof ArtistSearchActivity) {
+                    if(((ArtistSearchActivity) mContext).findViewById(R.id.fragment_detail_toptracks) != null) {
+                        twoPane = true;
+                    }
+                }
+                if(twoPane) {
+                    //TODO load fragment in popup
+                    Log.v(Constants.LOG_TAG,"TODO load fragment in popup with data " + topTracks.toString());
+                } else {
+                    Intent myIntent = new Intent(v.getContext(), PlayerActivity.class);
+                    myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+                    mContext.startActivity(myIntent);
+                }
             }
         });
 
