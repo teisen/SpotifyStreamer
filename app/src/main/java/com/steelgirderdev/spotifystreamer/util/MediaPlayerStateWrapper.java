@@ -107,7 +107,10 @@ public class MediaPlayerStateWrapper {
         Log.d(tag, "seekTo()");
         if (EnumSet.of(State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE).contains(currentState)) {
             mPlayer.seekTo(msec);
-        } else throw new RuntimeException(currentState.name());
+        } else {
+            //throw new RuntimeException(currentState.name());
+            Log.d(tag, "seekTo() was not done, as the transition was not allowed");
+        }
     }
 
     public void pause() {
@@ -123,7 +126,10 @@ public class MediaPlayerStateWrapper {
         if (EnumSet.of(State.PREPARED, State.STARTED, State.PAUSED, State.PLAYBACK_COMPLETE).contains(currentState)) {
             mPlayer.start();
             currentState = State.STARTED;
-        } else throw new RuntimeException(currentState.name());
+        } else {
+            //throw new RuntimeException(currentState.name());
+            Log.d(tag, "start() was not done, as the transition was not allowed");
+        }
     }
 
     public void stop() {

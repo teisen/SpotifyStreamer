@@ -17,7 +17,6 @@ import android.os.IBinder;
 import android.os.PowerManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.RemoteViews;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -157,6 +156,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                             progressHandler = new ProgressHandler();
                             progressHandler.execute();
                         }
+                        createNotification(false);
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
                         //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
@@ -212,10 +212,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         //However, the wake lock acquired in this example guarantees only that the CPU remains awake. If you are streaming media over the network and you are using Wi-Fi, you probably want to hold a WifiLock as well, which you must acquire and release manually. So, when you start preparing the MediaPlayer with the remote URL, you should create and acquire the Wi-Fi lock. For example:
         wifiLock.acquire();
 
-        // set the service in foreground
-        //setForeground(topTracks.getCurrentTrack().trackname, topTracks.artist.artistname);
-
-        createNotification(topTracks);
+        createNotification(true);
 
         mMediaPlayer.prepareAsync(); // will call OnPreparedListener
     }
@@ -315,7 +312,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
     }
 
-    public void createNotification(final TopTracks topTracks) {
+    /**
+     * Displays a notification with actions and image
+     * @param forcePauseicon set to true to force the display of the pause icon, use when loading a new track
+     */
+    public void createNotification(final boolean forcePauseicon) {
 
         Target target2 = new Target() {
             @Override
@@ -329,17 +330,33 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
                 final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, 0);
 
-                // Build notification
-                Notification noti = new Notification.Builder(getApplicationContext())
-                        .setContentTitle(topTracks.getCurrentTrack().trackname)
-                        .setContentText(topTracks.artist.artistname)
-                        .setSmallIcon(android.R.drawable.ic_media_play)
-                        .setLargeIcon(bitmap)
-                        .setContentIntent(pi)
-                        .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
-                        .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
-                        .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
-                        .build();
+                Notification noti;
+                if(forcePauseicon || mMediaPlayer.isPlayingSave()) {
+                    // Build notification
+                    noti = new Notification.Builder(getApplicationContext())
+                            .setContentTitle(topTracks.getCurrentTrack().trackname)
+                            .setContentText(topTracks.artist.artistname)
+                            .setSmallIcon(android.R.drawable.ic_media_play)
+                            .setLargeIcon(bitmap)
+                            .setContentIntent(pi)
+                            .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
+                            .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
+                            .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
+                            .build();
+
+                } else {
+                    // Build notification
+                    noti = new Notification.Builder(getApplicationContext())
+                            .setContentTitle(topTracks.getCurrentTrack().trackname)
+                            .setContentText(topTracks.artist.artistname)
+                            .setSmallIcon(R.drawable.ic_play_arrow_white_48dp)
+                            .setLargeIcon(bitmap)
+                            .setContentIntent(pi)
+                            .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
+                            .addAction(R.drawable.ic_play_arrow_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
+                            .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
+                            .build();
+                }
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 // hide the notification after its selected
                 noti.flags |= Notification.FLAG_FOREGROUND_SERVICE;
