@@ -84,7 +84,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                         if(intent.hasExtra(Constants.EXTRA_TOP_TRACKS)) {
                             topTracks = (TopTracks) intent.getExtras().get(Constants.EXTRA_TOP_TRACKS);
                         }
-                        if(mMediaPlayer.isPlayingSave() == false) {
+                        if(!mMediaPlayer.isPlayingSave()) {
                             playCurrentTrack();
                         }
                     } catch (IllegalArgumentException iae) {
@@ -220,10 +220,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         mMediaPlayer.prepareAsync(); // will call OnPreparedListener
     }
 
-    /**
-     *
-     * @param mp
-     */
     public void onPrepared(MediaPlayer mp) {
         Log.v(Constants.LOG_TAG, "on prepared called in MediaPLayerService");
         progressHandler = new ProgressHandler();
@@ -237,9 +233,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
     /**
      * Implementation from MediaPlayer.OnErrorListener - is called when the AsyncPrepare is failing
-     * @param mp
-     * @param what
-     * @param extra
+     * @param mp The Mediaplayer
+     * @param what what errored
+     * @param extra which extra
      * @return True if the method handled the error, false if it didn't. Returning false, or not having an OnErrorListener at all, will cause the OnCompletionListener to be called.
      */
     @Override
@@ -346,7 +342,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                         .build();
                 NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
                 // hide the notification after its selected
-                noti.flags |= Notification.FLAG_AUTO_CANCEL;
+                noti.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
                 notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
             }
