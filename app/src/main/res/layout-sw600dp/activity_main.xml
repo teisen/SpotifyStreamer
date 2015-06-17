@@ -5,7 +5,7 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    tools:context="com.example.android.sunshine.app.MainActivity">
+    tools:context="com.steelgirderdev.spotifystreamer.ui.ArtistListActivity">
 
     <!--
     This layout is a two-pane layout for the Items master/detail flow.
@@ -13,7 +13,7 @@
 
     <fragment
         android:id="@+id/fragment_artistsearch"
-        android:name="com.steelgirderdev.spotifystreamer.ui.ArtistSearchFragment"
+        android:name="com.steelgirderdev.spotifystreamer.ui.ArtistListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
@@ -23,6 +23,6 @@
         android:id="@+id/fragment_detail_toptracks"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1" />
+        android:layout_weight="3" />
 
 </LinearLayout>

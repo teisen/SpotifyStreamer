@@ -2,6 +2,8 @@ package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -12,11 +14,12 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.ui.ArtistSearchActivity;
+import com.steelgirderdev.spotifystreamer.ui.ArtistDetailActivity;
+import com.steelgirderdev.spotifystreamer.ui.ArtistListActivity;
 import com.steelgirderdev.spotifystreamer.ui.PlayerActivity;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.Track;
-import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
+import com.steelgirderdev.spotifystreamer.ui.PlayerFragment;
 
 import java.util.List;
 
@@ -25,9 +28,9 @@ import java.util.List;
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Adapter which connect the listview with a Track
  */
-public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, AppCompatActivity> {
+public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, FragmentActivity> {
 
-    public TopTracksAdapter(AppCompatActivity context, List<TopTracks> objects) {
+    public TopTracksAdapter(FragmentActivity context, List<TopTracks> objects) {
         super(context, objects);
     }
 
@@ -40,18 +43,31 @@ public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, AppCompatAc
             @Override
             public void onClick(View v) {
                 boolean twoPane = false;
-                if(mContext instanceof TopTracksActivity) {
-                    if(((TopTracksActivity) mContext).findViewById(R.id.fragment_artistsearch) != null) {
-                        twoPane = true;
-                    }
-                } else if(mContext instanceof ArtistSearchActivity) {
-                    if(((ArtistSearchActivity) mContext).findViewById(R.id.fragment_detail_toptracks) != null) {
-                        twoPane = true;
-                    }
+                // if the activity that has this fragment is the ArtistListActivity , then its twoPane
+                if(mContext instanceof ArtistListActivity) {
+                    twoPane = true;
                 }
-                if(twoPane) {
+                if(twoPane) { //TODO - reactivate after test
                     //TODO load fragment in popup
-                    Log.v(Constants.LOG_TAG,"TODO load fragment in popup with data " + topTracks.toString());
+                    Log.v(Constants.LOG_TAG,"TODO load fragment in popup with data ");
+                    if(topTracks == null) {
+                        Log.e(Constants.LOG_TAG,"topTracks is null");
+                    } else {
+                        Log.v(Constants.LOG_TAG,topTracks.artist.artistname);
+                    }
+                    // The device is using a large layout, so show the fragment as a dialog
+                    PlayerFragment newFragment = new PlayerFragment();
+                    newFragment.setContext(mContext);
+                    FragmentManager fragmentManager = mContext.getSupportFragmentManager();
+                    newFragment.show(fragmentManager, "dialog");
+                    topTracks.command = Constants.ACTION_PLAY;
+                    newFragment.setTopTracks(topTracks);
+                    newFragment.executeCommand();
+                    //fragmentManager.beginTransaction()
+                    //        .add(android.R.id.content, newFragment)
+                    //        .commit();
+
+
                 } else {
                     Intent myIntent = new Intent(v.getContext(), PlayerActivity.class);
                     myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);

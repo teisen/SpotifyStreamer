@@ -2,20 +2,22 @@ package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.ui.ArtistSearchActivity;
+import com.steelgirderdev.spotifystreamer.ui.ArtistListActivity;
 import com.steelgirderdev.spotifystreamer.model.Artist;
-import com.steelgirderdev.spotifystreamer.ui.TopTracksActivity;
-import com.steelgirderdev.spotifystreamer.ui.TopTracksFragment;
+import com.steelgirderdev.spotifystreamer.ui.ArtistDetailActivity;
+import com.steelgirderdev.spotifystreamer.ui.ArtistDetailFragment;
 
 import java.util.List;
 
@@ -24,38 +26,44 @@ import java.util.List;
  * Source: http://stackoverflow.com/questions/2265661/how-to-use-arrayadaptermyclass
  * Adapter which connect the listview with an Artist Record
  */
-public class ArtistAdapter extends GenericArrayAdapter<Artist, AppCompatActivity> {
+public class ArtistAdapter extends GenericArrayAdapter<Artist, FragmentActivity> {
 
-    public ArtistAdapter(AppCompatActivity context, List<Artist> objects) {
+    public ArtistAdapter(FragmentActivity context, List<Artist> objects) {
         super(context, objects);
     }
 
-    @Override public void drawRow(TextView textView, ImageView imageView, final Artist artist) {
+    @Override public void drawRow(final TextView textView, ImageView imageView, final Artist artist) {
         textView.setText(artist.artistname);
         Log.v(Constants.LOG_TAG, artist.toString());
         LinearLayout linearLayout = (LinearLayout) textView.getParent();
+        /*
         linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 boolean twoPane = false;
-                if(mContext instanceof ArtistSearchActivity) {
-                    if(((ArtistSearchActivity) mContext).findViewById(R.id.fragment_detail_toptracks) != null) {
+                if(mContext instanceof ArtistListActivity) {
+                    if(((ArtistListActivity) mContext).findViewById(R.id.fragment_detail_toptracks) != null) {
                         twoPane = true;
                     }
+                    ListView lv = ((ListView)textView.getParent().getParent());
+                    lv.dispatchSetActivated(false);
+
+                    ((LinearLayout)textView.getParent()).setActivated(true);
                 }
                 if(twoPane) {
-                    TopTracksFragment ttf = (TopTracksFragment) mContext.getSupportFragmentManager().findFragmentById(R.id.fragment_detail_toptracks);
+                    ArtistDetailFragment ttf = (ArtistDetailFragment) mContext.getSupportFragmentManager().findFragmentById(R.id.fragment_detail_toptracks);
                     if (ttf != null) {
-                        ttf.loadTrackList(artist.spotifyId, artist.artistname);
+                        //TODO ttf.loadTrackList(artist);
                     }
                 } else {
-                    Intent myIntent = new Intent(v.getContext(), TopTracksActivity.class);
+                    Intent myIntent = new Intent(v.getContext(), ArtistDetailActivity.class);
                     myIntent.putExtra(Constants.EXTRA_ARTIST, artist);
                     mContext.startActivity(myIntent);
                 }
 
             }
         });
+        */
 
         // load the thumbnail if available, otherwise show a questionmark symbol
         if(artist.urlThumbnail != null) {

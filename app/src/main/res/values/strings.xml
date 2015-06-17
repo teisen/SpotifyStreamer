@@ -22,4 +22,9 @@
     <string name="play_pause">Pause</string>
     <string name="skip_next">Next</string>
     <string name="background_image_str">Song Image</string>
+    <string name="title_artist_list">Artist2s</string>
+    <string name="title_artist_detail">Artist2 Detail</string>
+    <string name="customnotificationtitle">TODO-TITLE</string>
+    <string name="customnotificationtext">TODO-text</string>
+    <string name="customnotificationticker">TODO-ticker</string>
 </resources>

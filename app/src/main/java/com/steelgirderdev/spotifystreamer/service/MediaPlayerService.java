@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -15,8 +16,10 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -149,14 +152,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                             mMediaPlayer.pause();
                             //When you pause or stop your media, or when you no longer need the network, you should release the lock:
                             wifiLock.release();
+                            createNotification(false);
                         } else {
                             wifiLock.acquire();
                             mMediaPlayer.seekTo(mMediaPlayer.getCurrentPosition());
                             mMediaPlayer.start();
                             progressHandler = new ProgressHandler();
                             progressHandler.execute();
+                            createNotification(true);
                         }
-                        createNotification(false);
+
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
                         //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
@@ -314,13 +319,16 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
     /**
      * Displays a notification with actions and image
-     * @param forcePauseicon set to true to force the display of the pause icon, use when loading a new track
+     * @param isPlaying set to true to force the display of the pause icon, use when loading a new track
      */
-    public void createNotification(final boolean forcePauseicon) {
+    public void createNotification(final boolean isPlaying) {
 
         Target target2 = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                //customNotification();
+                customNotification2(bitmap, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
+/*
                 // Prepare intent which is triggered if the
                 // notification is selected
                 Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
@@ -362,13 +370,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 noti.flags |= Notification.FLAG_FOREGROUND_SERVICE;
 
                 notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
-            }
+*/
 
-            private PendingIntent getPendingIntent(String action, int requestCode) {
-                Intent serviceIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
-                serviceIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-                serviceIntent.setAction(action);
-                return PendingIntent.getService(getApplicationContext(), requestCode, serviceIntent, 0);
             }
 
             @Override
@@ -386,6 +389,73 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 .load(topTracks.getCurrentTrack().urlHighres)
                 .into(target2);
 
+    }
+
+    private PendingIntent getPendingIntent(String action, int requestCode) {
+        Intent serviceIntent = new Intent(getApplicationContext(), MediaPlayerService.class);
+        serviceIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+        serviceIntent.setAction(action);
+        return PendingIntent.getService(getApplicationContext(), requestCode, serviceIntent, 0);
+    }
+
+    public void customNotification2(Bitmap bigIcon, String trackname, String artistname, boolean isPlaying) {
+        Notification foregroundNote;
+
+        // Open NotificationView Class on Notification Click
+        Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
+        TopTracks restoremTopTracks = topTracks.createClone();
+        restoremTopTracks.command = Constants.ACTION_NONE;
+        restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+        restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
+        final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        RemoteViews bigView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.notification);
+
+        if (android.os.Build.VERSION.SDK_INT > 20) {
+            // I am not sure of this method
+            //bigView.setTextColor(R.id.title, Color.BLACK);
+            bigView.setTextColor(R.id.notification_trackname, Color.BLACK);
+            bigView.setTextColor(R.id.notification_artistname, Color.BLACK);
+        }
+
+        bigView.setTextViewText(R.id.notification_trackname, trackname);
+
+        bigView.setTextViewText(R.id.notification_artistname, artistname);
+
+        bigView.setImageViewBitmap(R.id.notification_thumbnail, bigIcon);
+
+        bigView.setImageViewResource(R.id.notification_prev, R.drawable.ic_skip_previous_white_48dp);
+        bigView.setOnClickPendingIntent(R.id.notification_prev, getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1));
+
+        if(!isPlaying) {
+            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_play_arrow_black_36dp);
+        } else {
+            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_pause_white_48dp);
+        }
+        bigView.setOnClickPendingIntent(R.id.notification_playpause, getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2));
+
+        bigView.setImageViewResource(R.id.notification_next, R.drawable.ic_skip_next_white_48dp);
+        bigView.setOnClickPendingIntent(R.id.notification_next, getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3));
+
+        bigView.setImageViewResource(R.id.notification_stop, android.R.drawable.ic_menu_close_clear_cancel);
+        bigView.setOnClickPendingIntent(R.id.notification_stop, getPendingIntent(Constants.ACTION_STOP, 4));
+
+
+        // bigView.setOnClickPendingIntent() etc..
+
+        Notification.Builder mNotifyBuilder = new Notification.Builder(this);
+        foregroundNote = mNotifyBuilder.setContentTitle(trackname)
+                .setContentText(artistname)
+                .setContentIntent(pi)
+                .setSmallIcon(R.drawable.ic_play_arrow_black_36dp)
+                .setLargeIcon(bigIcon)
+                .build();
+
+        foregroundNote.bigContentView = bigView;
+
+        // now show notification..
+        NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyManager.notify(1, foregroundNote);
     }
 
 

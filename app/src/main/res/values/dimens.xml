@@ -5,4 +5,7 @@
     <dimen name="artist_listitem_leftpadding">16dp</dimen>
     <dimen name="artists_albumWH">80dp</dimen>
     <dimen name="player_highresWH">200dp</dimen>
+    <dimen name="player_outsidePadding">300dp</dimen>
+    <dimen name="popup_width">500dp</dimen>
+    <dimen name="popup_height">500dp</dimen>
 </resources>

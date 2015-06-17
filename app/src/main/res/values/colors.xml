@@ -2,4 +2,6 @@
 <resources>
     <color name="fullscreen_secondary_line_color">#E5CCCCCC</color>
     <color name="fullscreen_line_color">#E5FFFFFF</color>
+    <color name="aqua">#ff26ccc9</color>
+    <color name="green">#ff70f490</color>
 </resources>

@@ -24,6 +24,10 @@ public class Artist implements Parcelable {
     public String urlThumbnail;
     public String urlHighres;
 
+    public Artist() {
+
+    }
+
     public Artist(final kaaes.spotify.webapi.android.models.Artist object) {
         this.artistname = object.name;
         this.spotifyId = object.id;

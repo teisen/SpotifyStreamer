@@ -11,47 +11,47 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name=".ui.ArtistSearchActivity"
+            android:name=".ui.ArtistListActivity"
             android:label="@string/app_name"
             android:launchMode="singleTask" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.TopTracksActivity"
-            android:label="@string/title_activity_top_tracks"
-            android:launchMode="singleTask"
-            android:parentActivityName=".ui.ArtistSearchActivity" >
 
-            <!-- Parent activity meta-data to support 4.0 and lower -->
+        <activity
+            android:name=".ui.ArtistDetailActivity"
+            android:label="@string/title_artist_detail"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.ArtistListActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ArtistSearchActivity" />
->
+                android:value=".ui.ArtistListActivity" />
         </activity>
+
+        <activity
+            android:name=".ui.PlayerActivity"
+            android:label="@string/title_activity_player"
+            android:launchMode="singleTask"
+            android:parentActivityName=".ui.ArtistDetailActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ArtistListActivity" />
+        </activity>
+
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:launchMode="singleTask"
-            android:parentActivityName=".ui.ArtistSearchActivity" >
+            android:parentActivityName=".ui.ArtistListActivity" >
 
             <!-- Parent activity meta-data to support 4.0 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ArtistSearchActivity" />
->
-        </activity>
-        <activity
-            android:name=".ui.PlayerActivity"
-            android:label="@string/title_activity_player"
-            android:parentActivityName=".ui.TopTracksActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.TopTracksActivity" />
+                android:value=".ui.ArtistListActivity" />
         </activity>
 
         <service
@@ -59,6 +59,9 @@
             android:enabled="true"
             android:exported="false" >
         </service>
+
+
+
     </application>
 
 </manifest>

@@ -1,18 +1,24 @@
 package com.steelgirderdev.spotifystreamer.ui;
 
 
+import android.app.Activity;
+import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Handler;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
@@ -29,8 +35,9 @@ import com.steelgirderdev.spotifystreamer.model.TopTracks;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlayerFragment extends Fragment {
+public class PlayerFragment extends DialogFragment {
 
+    private Activity mContext;
     private TopTracks topTracks;
     private Toast toast;
 
@@ -53,24 +60,56 @@ public class PlayerFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public void setContext(Activity mContext) {
+        this.mContext = mContext;
+    }
+
     @Override
     public void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(getActivity()).registerReceiver((receiver),
+        LocalBroadcastManager.getInstance(mContext).registerReceiver((receiver),
                 new IntentFilter(Constants.BROADCAST_INTENT_TRACKUIUPDATE)
         );
     }
 
     @Override
     public void onStop() {
-        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
+        LocalBroadcastManager.getInstance(mContext).unregisterReceiver(receiver);
         super.onStop();
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        // set the dimensions of the dialog if we are runing in dialog
+        Dialog d = getDialog();
+        if (d!=null){
+            int width = getResources().getDimensionPixelSize(R.dimen.popup_width);
+            int height = getResources().getDimensionPixelSize(R.dimen.popup_height);
+            d.getWindow().setLayout(width, height);
+        }
+    }
+
+    /** The system calls this only when creating the layout in a dialog.
+     * http://developer.android.com/guide/topics/ui/dialogs.html */
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+        // The only reason you might override this method when using onCreateView() is
+        // to modify any dialog characteristics. For example, the dialog includes a
+        // title by default, but your custom layout might not need it. So here you can
+        // remove the dialog title, but you must call the superclass to get the Dialog.
+        Dialog dialog = super.onCreateDialog(savedInstanceState);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.MY_DIALOG);
+        return dialog;
+    }
+
+    /** The system calls this to get the DialogFragment's layout, regardless
+     of whether it's being displayed as a dialog or an embedded fragment. */
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+        // Inflate the layout to use as dialog or embedded fragment http://developer.android.com/guide/topics/ui/dialogs.html
         rootView = inflater.inflate(R.layout.fragment_player, container, false);
         pageView = (LinearLayout) rootView.findViewById(R.id.pageView);
         textViewTrackName = (TextView) rootView.findViewById(R.id.player_textview_trackname);
@@ -84,11 +123,17 @@ public class PlayerFragment extends Fragment {
         imageViewPlayPause = (ImageView) rootView.findViewById(R.id.player_playPause);
         imageViewNext = (ImageView) rootView.findViewById(R.id.player_next);
 
+
+        // if we got called from an activity, mContext is not set yet, initialize it
+        if(mContext == null) {
+            mContext = getActivity();
+        }
+
         // load the tracks if resumed
         if(savedInstanceState == null || !savedInstanceState.containsKey(Constants.PARCEL_KEY_TOPTRACKS)) {
             // read intent extras
-            if(getActivity().getIntent().hasExtra(Constants.EXTRA_TOP_TRACKS)) {
-                topTracks = (TopTracks) getActivity().getIntent().getExtras().get(Constants.EXTRA_TOP_TRACKS);
+            if(mContext.getIntent().hasExtra(Constants.EXTRA_TOP_TRACKS)) {
+                topTracks = (TopTracks) mContext.getIntent().getExtras().get(Constants.EXTRA_TOP_TRACKS);
                 Log.v(Constants.LOG_TAG, "Intent Extras: " + topTracks.toString());
                 executeCommand();
             } else {
@@ -124,8 +169,10 @@ public class PlayerFragment extends Fragment {
 
         imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_48dp);
 
-        // set data to UI
-        setDataToUI(textViewTrackName, textViewArtist, textViewAlbum, ImageViewHighresImage);
+        if(topTracks != null) {
+            // set data to UI
+            setDataToUI(textViewTrackName, textViewArtist, textViewAlbum, ImageViewHighresImage);
+        }
 
         // The call to getDuration returns wrong milliseconds, 100's of hours for the 30 sec
         // mp3s. Must be file issue on Spotify side. Since all previews are 30s we can hardcode it
@@ -147,10 +194,7 @@ public class PlayerFragment extends Fragment {
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                Intent serviceIntent = new Intent(getActivity(), MediaPlayerService.class);
-                serviceIntent.putExtra(Constants.EXTRA_SEEK_TO_MILLIS, seekBar.getProgress());
-                serviceIntent.setAction(Constants.ACTION_SEEK_TO);
-                getActivity().startService(serviceIntent);
+                playerServiceAction(Constants.ACTION_SEEK_TO, seekBar.getProgress());
             }
         });
 
@@ -182,7 +226,7 @@ public class PlayerFragment extends Fragment {
         return rootView;
     }
 
-    private void executeCommand() {
+    public void executeCommand() {
         if(topTracks.command!=null) {
 
             switch (topTracks.command) {
@@ -214,19 +258,41 @@ public class PlayerFragment extends Fragment {
         }
     }
 
+    public void setTopTracks(TopTracks pTopTracks) {
+        topTracks = pTopTracks;
+    }
+
     private void setDataToUI(TextView textViewTrackName, TextView textViewArtist, TextView textViewAlbum, ImageView imageViewHighresImage) {
         textViewTrackName.setText(topTracks.getCurrentTrack().trackname);
         textViewArtist.setText(topTracks.artist.artistname);
         textViewAlbum.setText(topTracks.getCurrentTrack().albumname);
 
-        showImage(getActivity(), imageViewHighresImage, topTracks.getCurrentTrack().urlHighres);
+        showImage(mContext, imageViewHighresImage, topTracks.getCurrentTrack().urlHighres);
     }
 
+    /**
+     * Convenience Method without millis
+     * @param action the action to send
+     */
     private void playerServiceAction(String action) {
-        Intent serviceIntent = new Intent(getActivity(), MediaPlayerService.class);
-        serviceIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+        playerServiceAction(action, null);
+    }
+
+    /**
+     * Sends a command to the service and starts it if neccessary
+     * @param action the action to send
+     * @param seekToMillis the milliseconds to seek to if the command is seekTo
+     */
+    private void playerServiceAction(String action, Integer seekToMillis) {
+        Intent serviceIntent = new Intent(mContext, MediaPlayerService.class);
+        // in the case of seek, only send millis, and not the whole topTracks object
+        if(action.equals(Constants.ACTION_SEEK_TO)) {
+            serviceIntent.putExtra(Constants.EXTRA_SEEK_TO_MILLIS, seekToMillis);
+        } else {
+            serviceIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+        }
         serviceIntent.setAction(action);
-        getActivity().startService(serviceIntent);
+        mContext.startService(serviceIntent);
     }
 
     @Override

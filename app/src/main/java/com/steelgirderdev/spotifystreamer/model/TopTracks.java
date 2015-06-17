@@ -22,6 +22,10 @@ public class TopTracks implements Parcelable {
         this.command = command;
     }
 
+    public TopTracks() {
+        
+    }
+
     public Track getCurrentTrack() {
         return tracks.get(playerpos);
     }

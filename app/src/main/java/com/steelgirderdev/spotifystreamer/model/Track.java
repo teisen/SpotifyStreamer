@@ -24,6 +24,10 @@ public class Track implements Parcelable {
     public String urlThumbnail;
     public String urlHighres;
 
+    public Track() {
+
+    }
+
     public Track(final kaaes.spotify.webapi.android.models.Track object) {
         this.trackname = object.name;
         this.albumname = object.album.name;
