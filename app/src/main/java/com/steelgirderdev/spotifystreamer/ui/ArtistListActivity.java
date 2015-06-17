@@ -1,18 +1,31 @@
 package com.steelgirderdev.spotifystreamer.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.opengl.Visibility;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
+import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 import com.steelgirderdev.spotifystreamer.model.Artist;
+import com.steelgirderdev.spotifystreamer.model.TopTracks;
+import com.steelgirderdev.spotifystreamer.model.TrackUiUpdate;
 
 /**
  * An activity representing a list of Artist2s. This activity
@@ -38,7 +51,24 @@ implements ArtistListFragment.Callbacks {
      * device.
      */
     private boolean mTwoPane;
+    private MenuItem shareItem;
+	private ShareActionProvider mShareActionProvider;
+    private BroadcastReceiver receiver;
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
+                new IntentFilter(Constants.BROADCAST_INTENT_TRACKSTARTED)
+        );
+    }
+
+    @Override
+    public void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+        super.onStop();
+    }
+	
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +91,27 @@ implements ArtistListFragment.Callbacks {
         }
 
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(String name, Context context, AttributeSet attrs) {
+        // receiver that updates the current track progress on the UI from the service.
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                TopTracks topTracks = (TopTracks) intent.getExtras().get(Constants.PARCEL_KEY_TOPTRACKS);
+                Log.v(Constants.LOG_TAG, "onReceive update " + topTracks);
+                // update the share intent with the new artist info
+                Intent sendIntent = new Intent();
+                sendIntent.setAction(Intent.ACTION_SEND);
+                sendIntent.putExtra(Intent.EXTRA_TEXT, topTracks.getShareString());
+                sendIntent.setType("text/plain");
+                setShareIntent(sendIntent);
+            }
+        };
+
+        return super.onCreateView(name, context, attrs);
     }
 
     /**
@@ -94,10 +145,43 @@ implements ArtistListFragment.Callbacks {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        /*
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
+		// Inflate menu resource file.
+		//TODO - this is probs not neccessary
+		//getMenuInflater().inflate(R.menu.menu_item_share, menu);
+
+		// Locate MenuItem with ShareActionProvider
+		MenuItem item = menu.findItem(R.id.action_share);
+
+		// Fetch and store ShareActionProvider
+		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
+	
+        return true;*/
+
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        // Set up ShareActionProvider's default share intent
+        shareItem = menu.findItem(R.id.action_share);
+        mShareActionProvider = (ShareActionProvider)
+                MenuItemCompat.getActionProvider(shareItem);
+        //mShareActionProvider.setShareIntent(getDefaultIntent());
+
+        shareItem.setVisible(false);
+
+        return super.onCreateOptionsMenu(menu);
     }
+	
+	/** Call to update the share intent
+	You may only need to set the share intent once during the creation of your menus, or you may want to set it and then update it as the UI changes. For example, when you view photos full screen in the Gallery app, the sharing intent changes as you flip between photos.
+	*/
+	public void setShareIntent(Intent shareIntent) {
+		if (mShareActionProvider != null && shareItem != null) {
+			mShareActionProvider.setShareIntent(shareIntent);
+            shareItem.setVisible(true);
+		}
+	}
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

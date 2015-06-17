@@ -23,6 +23,7 @@ public class Constants {
     public static final int NOTIFICATION_ID_PLAYER = 1;
 
     public static final String BROADCAST_INTENT_TRACKUIUPDATE = "BroadCastTRACKUIUPDATE";
+    public static final String BROADCAST_INTENT_TRACKSTARTED = "BroadCastTRACKSTARTED";
 
     //actions
     public static final String ACTION_PLAY_IF_NOT_PLAYING = "com.steelgirderdev.spotifystreamer.service.action.PLAYIFNOTPLAYING";

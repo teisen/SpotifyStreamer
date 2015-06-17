@@ -27,4 +27,5 @@
     <string name="customnotificationtitle">TODO-TITLE</string>
     <string name="customnotificationtext">TODO-text</string>
     <string name="customnotificationticker">TODO-ticker</string>
+    <string name="share">Share</string>
 </resources>

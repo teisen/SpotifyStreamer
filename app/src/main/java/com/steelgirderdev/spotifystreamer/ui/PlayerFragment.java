@@ -159,15 +159,15 @@ public class PlayerFragment extends DialogFragment {
                     setDataToUI(textViewTrackName, textViewArtist, textViewAlbum, ImageViewHighresImage);
                 }
                 if(uiUpdate.playing) {
-                    imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_48dp);
+                    imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_24dp);
                 } else {
-                    imageViewPlayPause.setImageResource(R.drawable.ic_play_arrow_white_48dp);
+                    imageViewPlayPause.setImageResource(R.drawable.ic_play_arrow_white_24dp);
                 }
             }
         };
 
 
-        imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_48dp);
+        imageViewPlayPause.setImageResource(R.drawable.ic_pause_white_24dp);
 
         if(topTracks != null) {
             // set data to UI

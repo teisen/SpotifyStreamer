@@ -3,6 +3,7 @@ package com.steelgirderdev.spotifystreamer.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -284,6 +285,8 @@ public class ArtistListFragment extends ListFragment {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(artists.get(position));
+		
+
     }
 
     @Override

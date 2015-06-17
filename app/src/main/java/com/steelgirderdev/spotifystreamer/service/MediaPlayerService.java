@@ -219,6 +219,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         createNotification(true);
 
+        // broadcast the playing track
+        Intent intent = new Intent(Constants.BROADCAST_INTENT_TRACKSTARTED);
+        intent.putExtra(Constants.PARCEL_KEY_TOPTRACKS, topTracks);
+        broadcaster.sendBroadcast(intent);
+
         mMediaPlayer.prepareAsync(); // will call OnPreparedListener
     }
 
@@ -424,17 +429,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         bigView.setImageViewBitmap(R.id.notification_thumbnail, bigIcon);
 
-        bigView.setImageViewResource(R.id.notification_prev, R.drawable.ic_skip_previous_white_48dp);
+        bigView.setImageViewResource(R.id.notification_prev, R.drawable.ic_skip_previous_black_24dp);
         bigView.setOnClickPendingIntent(R.id.notification_prev, getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1));
 
         if(!isPlaying) {
-            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_play_arrow_black_36dp);
+            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_play_arrow_black_24dp);
         } else {
-            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_pause_white_48dp);
+            bigView.setImageViewResource(R.id.notification_playpause, R.drawable.ic_pause_black_24dp);
         }
         bigView.setOnClickPendingIntent(R.id.notification_playpause, getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2));
 
-        bigView.setImageViewResource(R.id.notification_next, R.drawable.ic_skip_next_white_48dp);
+        bigView.setImageViewResource(R.id.notification_next, R.drawable.ic_skip_next_black_24dp);
         bigView.setOnClickPendingIntent(R.id.notification_next, getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3));
 
         bigView.setImageViewResource(R.id.notification_stop, android.R.drawable.ic_menu_close_clear_cancel);
@@ -447,7 +452,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         foregroundNote = mNotifyBuilder.setContentTitle(trackname)
                 .setContentText(artistname)
                 .setContentIntent(pi)
-                .setSmallIcon(R.drawable.ic_play_arrow_black_36dp)
+                .setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
                 .setLargeIcon(bigIcon)
                 .build();
 

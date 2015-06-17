@@ -91,6 +91,10 @@ public class TopTracks implements Parcelable {
         return ret;
     }
 
+    public String getShareString() {
+        return "I am listening to " + getCurrentTrack().trackname +" from " + artist.artistname + " #SpotifyStreamer " + " Listen Now: " + getCurrentTrack().urlPreview ;
+    }
+
     public TopTracks createClone() {
         TopTracks clone = new TopTracks(artist, tracks, playerpos, command);
         return clone;
