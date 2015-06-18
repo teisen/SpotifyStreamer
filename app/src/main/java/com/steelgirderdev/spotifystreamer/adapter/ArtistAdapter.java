@@ -70,8 +70,7 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist, FragmentActivity>
             showImage(mContext, imageView, artist.urlThumbnail);
             imageView.setVisibility(View.VISIBLE);
         } else {
-            //TODO: find a placeholder image to use imageView.setImageResource();
-            imageView.setVisibility(View.INVISIBLE);
+            imageView.setImageResource(R.drawable.ic_album_black_24dp);
         }
     }
 
@@ -82,6 +81,7 @@ public class ArtistAdapter extends GenericArrayAdapter<Artist, FragmentActivity>
                 //TODO: find a error and placeholder image to use .error(android.R.drawable.ic_menu_close_clear_cancel) .placeholder()
                 .resizeDimen(R.dimen.artists_albumWH, R.dimen.artists_albumWH)
                 .centerInside()
+                .placeholder(R.drawable.ic_album_white_24dp)
                 .into(imageView);
     }
 

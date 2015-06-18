@@ -4,9 +4,9 @@
     android:layout_height="wrap_content">
     <ImageView
         android:id="@+id/notification_thumbnail"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_width="@dimen/artists_albumWH"
+        android:layout_height="@dimen/artists_albumWH"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentLeft="true"
         android:scaleType="fitXY" />
 
@@ -14,14 +14,15 @@
         android:id="@+id/notification_buttons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_alignParentBottom="false"
         android:layout_alignParentRight="true"
         android:layout_toRightOf="@id/notification_thumbnail"
         android:divider="?android:listDivider"
         android:dividerPadding="12.0dip"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:showDividers="middle" >
+        android:showDividers="middle"
+        android:paddingTop="60dp">
 
         <ImageButton
             android:id="@+id/notification_prev"
@@ -72,13 +73,15 @@
         android:id="@+id/notification_textarea"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentTop="false"
         android:layout_gravity="center_vertical"
         android:layout_toLeftOf="@id/notification_stop"
         android:layout_toRightOf="@id/notification_thumbnail"
         android:orientation="vertical"
         android:paddingLeft="2dp"
-        android:paddingTop="8.0dip" >
+        android:paddingTop="8.0dip"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentRight="false">
 
         <TextView
             android:id="@+id/notification_trackname"

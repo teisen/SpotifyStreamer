@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -341,55 +342,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
      */
     public void createNotification(final boolean isPlaying) {
 
+        // first create the notification with a placeholder image until picasso is done loading
+        customNotification(null, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
+
         Target target2 = new Target() {
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                //customNotification();
                 customNotification(bitmap, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
-/*
-                // Prepare intent which is triggered if the
-                // notification is selected
-                Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
-                TopTracks restoremTopTracks = topTracks.createClone();
-                restoremTopTracks.command = Constants.ACTION_NONE;
-                restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-                restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
-                final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, 0);
-
-                Notification noti;
-                if(forcePauseicon || mMediaPlayer.isPlayingSave()) {
-                    // Build notification
-                    noti = new Notification.Builder(getApplicationContext())
-                            .setContentTitle(topTracks.getCurrentTrack().trackname)
-                            .setContentText(topTracks.artist.artistname)
-                            .setSmallIcon(android.R.drawable.ic_media_play)
-                            .setLargeIcon(bitmap)
-                            .setContentIntent(pi)
-                            .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
-                            .addAction(R.drawable.ic_pause_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
-                            .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
-                            .build();
-
-                } else {
-                    // Build notification
-                    noti = new Notification.Builder(getApplicationContext())
-                            .setContentTitle(topTracks.getCurrentTrack().trackname)
-                            .setContentText(topTracks.artist.artistname)
-                            .setSmallIcon(R.drawable.ic_play_arrow_white_48dp)
-                            .setLargeIcon(bitmap)
-                            .setContentIntent(pi)
-                            .addAction(R.drawable.ic_skip_previous_white_48dp, "Prev", getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1))
-                            .addAction(R.drawable.ic_play_arrow_white_48dp, "Pause/Play", getPendingIntent(Constants.ACTION_PLAYPAUSETOGGLE, 2))
-                            .addAction(R.drawable.ic_skip_next_white_48dp, "Next", getPendingIntent(Constants.ACTION_NEXT_FROM_NOTIFICATION, 3))
-                            .build();
-                }
-                NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-                // hide the notification after its selected
-                noti.flags |= Notification.FLAG_FOREGROUND_SERVICE;
-
-                notificationManager.notify(Constants.NOTIFICATION_ID_PLAYER, noti);
-*/
-
             }
 
             @Override
@@ -405,6 +364,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         Picasso.with(this)
                 .load(topTracks.getCurrentTrack().urlHighres)
+                .resizeDimen(R.dimen.artists_albumWH, R.dimen.artists_albumWH)
+                .centerInside()
                 .into(target2);
 
     }
@@ -421,8 +382,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
         TopTracks restoremTopTracks = topTracks.createClone();
         restoremTopTracks.command = Constants.ACTION_NONE;
+        topTracks.command = Constants.ACTION_NONE;
         restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
-        restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
+        //restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
         final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, PendingIntent.FLAG_UPDATE_CURRENT);
         return pi;
     }
@@ -443,7 +405,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
 
         bigView.setTextViewText(R.id.notification_artistname, artistname);
 
-        bigView.setImageViewBitmap(R.id.notification_thumbnail, bigIcon);
+        if(bigIcon!=null) {
+            bigView.setImageViewBitmap(R.id.notification_thumbnail, bigIcon);
+        } else {
+            bigView.setImageViewResource(R.id.notification_thumbnail, R.drawable.ic_audiotrack_black_24dp);
+        }
+
 
         bigView.setImageViewResource(R.id.notification_prev, R.drawable.ic_skip_previous_black_24dp);
         bigView.setOnClickPendingIntent(R.id.notification_prev, getPendingIntent(Constants.ACTION_PREVIOUS_FROM_NOTIFICATION, 1));
@@ -465,12 +432,17 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         // bigView.setOnClickPendingIntent() etc..
 
         Notification.Builder mNotifyBuilder = new Notification.Builder(this);
-        foregroundNote = mNotifyBuilder.setContentTitle(trackname)
+        Notification.Builder builder = mNotifyBuilder.setContentTitle(trackname)
                 .setContentText(artistname)
                 .setContentIntent(getRestoreIntent())
-                .setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
-                .setLargeIcon(bigIcon)
-                .build();
+                .setSmallIcon(R.drawable.ic_play_arrow_black_24dp);
+        if(bigIcon!=null) {
+            builder.setLargeIcon(bigIcon);
+        } else {
+            builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_audiotrack_black_24dp));
+        }
+
+        foregroundNote = builder.build();
 
         // the user can toggle in the settings if she wants notification controls
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);

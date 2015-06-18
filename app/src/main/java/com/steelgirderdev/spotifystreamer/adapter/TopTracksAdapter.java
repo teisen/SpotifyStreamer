@@ -63,10 +63,6 @@ public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, FragmentAct
                     topTracks.command = Constants.ACTION_PLAY;
                     newFragment.setTopTracks(topTracks);
                     newFragment.executeCommand();
-                    //fragmentManager.beginTransaction()
-                    //        .add(android.R.id.content, newFragment)
-                    //        .commit();
-
 
                 } else {
                     Intent myIntent = new Intent(v.getContext(), PlayerActivity.class);
@@ -81,8 +77,7 @@ public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, FragmentAct
             showImage(mContext, imageView, track.urlThumbnail);
             imageView.setVisibility(View.VISIBLE);
         } else {
-            //TODO: find a placeholder image to use imageView.setImageResource(android.R.drawable.ic_menu_help);
-            imageView.setVisibility(View.INVISIBLE);
+            imageView.setImageResource(R.drawable.ic_audiotrack_black_24dp);
         }
 
     }
@@ -94,6 +89,7 @@ public class TopTracksAdapter extends GenericArrayAdapter<TopTracks, FragmentAct
                 //TODO: find a error and placeholder image to use .error(android.R.drawable.ic_menu_close_clear_cancel)
                 .resizeDimen(R.dimen.artists_albumWH, R.dimen.artists_albumWH)
                 .centerInside()
+                .placeholder(R.drawable.ic_audiotrack_white_24dp)
                 .into(imageView);
     }
 

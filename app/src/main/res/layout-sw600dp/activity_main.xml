@@ -5,7 +5,8 @@
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
-    tools:context="com.steelgirderdev.spotifystreamer.ui.ArtistListActivity">
+    tools:context="com.steelgirderdev.spotifystreamer.ui.ArtistListActivity"
+    android:weightSum="12">
 
     <!--
     This layout is a two-pane layout for the Items master/detail flow.
@@ -16,13 +17,13 @@
         android:name="com.steelgirderdev.spotifystreamer.ui.ArtistListFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_weight="5"
         tools:layout="@android:layout/list_content" />
 
     <FrameLayout
         android:id="@+id/fragment_detail_toptracks"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="7" />
 
 </LinearLayout>

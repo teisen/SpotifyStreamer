@@ -30,4 +30,5 @@
     <string name="share">Share</string>
     <string name="show_notification_controls_title">Notification Controls</string>
     <string name="show_notification_controls_summary">Show player control buttons on notification</string>
+    <string name="action_now_playing">Now Playing</string>
 </resources>

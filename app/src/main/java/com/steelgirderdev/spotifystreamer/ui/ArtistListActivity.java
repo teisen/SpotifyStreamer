@@ -4,14 +4,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.opengl.Visibility;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
 import android.util.AttributeSet;
@@ -25,7 +23,6 @@ import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
-import com.steelgirderdev.spotifystreamer.model.TrackUiUpdate;
 
 /**
  * An activity representing a list of Artist2s. This activity
@@ -52,8 +49,10 @@ implements ArtistListFragment.Callbacks {
      */
     private boolean mTwoPane;
     private MenuItem shareItem;
+    private MenuItem nowPlayingItem;
 	private ShareActionProvider mShareActionProvider;
     private BroadcastReceiver receiver;
+    private TopTracks topTracks;
 
     @Override
     public void onStart() {
@@ -100,7 +99,7 @@ implements ArtistListFragment.Callbacks {
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                TopTracks topTracks = (TopTracks) intent.getExtras().get(Constants.PARCEL_KEY_TOPTRACKS);
+                topTracks = (TopTracks) intent.getExtras().get(Constants.PARCEL_KEY_TOPTRACKS);
                 Log.v(Constants.LOG_TAG, "onReceive update " + topTracks);
                 // update the share intent with the new artist info
                 Intent sendIntent = new Intent();
@@ -109,6 +108,7 @@ implements ArtistListFragment.Callbacks {
                 sendIntent.setType("text/plain");
                 setShareIntent(sendIntent);
                 // set the button to return to player
+                activateNowPlayingButton();
             }
         };
 
@@ -146,30 +146,16 @@ implements ArtistListFragment.Callbacks {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        /*
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-		// Inflate menu resource file.
-		//TODO - this is probs not neccessary
-		//getMenuInflater().inflate(R.menu.menu_item_share, menu);
-
-		// Locate MenuItem with ShareActionProvider
-		MenuItem item = menu.findItem(R.id.action_share);
-
-		// Fetch and store ShareActionProvider
-		mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(item);
-	
-        return true;*/
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
         // Set up ShareActionProvider's default share intent
         shareItem = menu.findItem(R.id.action_share);
-        mShareActionProvider = (ShareActionProvider)
-                MenuItemCompat.getActionProvider(shareItem);
-        //mShareActionProvider.setShareIntent(getDefaultIntent());
-
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
         shareItem.setVisible(false);
+
+        nowPlayingItem = menu.findItem(R.id.action_now_playing);
+        nowPlayingItem.setVisible(false);
+        nowPlayingItem.setIcon(R.drawable.ic_redo_white_24dp);
 
         return super.onCreateOptionsMenu(menu);
     }
@@ -184,6 +170,13 @@ implements ArtistListFragment.Callbacks {
 		}
 	}
 
+    /**
+     * makes the now playing button visible
+     */
+    public void activateNowPlayingButton() {
+        nowPlayingItem.setVisible(true);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
@@ -191,8 +184,23 @@ implements ArtistListFragment.Callbacks {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if(id == R.id.action_now_playing) {
+            if(mTwoPane) {
+                // The device is using a large layout, so show the fragment as a dialog
+                PlayerFragment newFragment = new PlayerFragment();
+                newFragment.setContext(this);
+                FragmentManager fragmentManager = this.getSupportFragmentManager();
+                newFragment.show(fragmentManager, "dialog");
+                topTracks.command = Constants.ACTION_NONE;
+                newFragment.setTopTracks(topTracks);
+                newFragment.executeCommand();
+            } else {
+                Intent myIntent = new Intent(this, PlayerActivity.class);
+                topTracks.command = Constants.ACTION_NONE;
+                myIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
+                nowPlayingItem.setIntent(myIntent);
+            }
+        } else if (id == R.id.action_settings) {
             Intent myIntent = new Intent(this, SettingsActivity.class);
             this.startActivity(myIntent);
             return true;
