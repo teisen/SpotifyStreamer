@@ -6,8 +6,8 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
@@ -16,7 +16,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.PowerManager;
-import android.support.v4.app.NotificationCompat;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -30,7 +30,6 @@ import com.steelgirderdev.spotifystreamer.model.TrackUiUpdate;
 import com.steelgirderdev.spotifystreamer.ui.PlayerActivity;
 import com.steelgirderdev.spotifystreamer.util.MediaPlayerStateWrapper;
 
-import java.io.IOException;
 import java.util.Set;
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnErrorListener {
@@ -52,7 +51,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         broadcaster = LocalBroadcastManager.getInstance(this);
         getOrCreateMediaplayer();
         getOrCreateWifiLock();
-
     }
 
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -148,18 +146,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                 }
                 case Constants.ACTION_PLAYPAUSETOGGLE: {
                     try {
-                        if (mMediaPlayer.isPlaying()) {
-                            mMediaPlayer.pause();
-                            //When you pause or stop your media, or when you no longer need the network, you should release the lock:
-                            wifiLock.release();
-                            createNotification(false);
+                        if(mMediaPlayer.isStopped() || mMediaPlayer.isPlaybackComplete()) {
+                            playCurrentTrack();
                         } else {
-                            wifiLock.acquire();
-                            mMediaPlayer.seekTo(mMediaPlayer.getCurrentPosition());
-                            mMediaPlayer.start();
-                            progressHandler = new ProgressHandler();
-                            progressHandler.execute();
-                            createNotification(true);
+                            if (mMediaPlayer.isPlaying()) {
+                                mMediaPlayer.pause();
+                                //When you pause or stop your media, or when you no longer need the network, you should release the lock:
+                                wifiLock.release();
+                                createNotification(false);
+                            } else {
+                                wifiLock.acquire();
+                                mMediaPlayer.seekTo(mMediaPlayer.getCurrentPosition());
+                                mMediaPlayer.start();
+                                progressHandler = new ProgressHandler();
+                                progressHandler.execute();
+                                createNotification(true);
+                            }
                         }
 
                     } catch (IllegalArgumentException iae) {
@@ -175,9 +177,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
                         wifiLock.release();
                         // stop the foreground mode, but keep the notification active
                         stopForeground(false);
+                        // cancel the notification
+                        cancelAllNotifications();
+                        // consider stopping the service
+                        //stopSelf();
                     } catch (IllegalArgumentException iae) {
                         iae.printStackTrace();
-                        //TODO UIUtil.toastIt(getActivity(), toast, getString(R.string.toast_could_not_play_file));
                     }
                     break;
                 }
@@ -200,6 +205,11 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         }
 
         return START_STICKY;
+    }
+
+    private void cancelAllNotifications() {
+        NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotifyManager.cancelAll();
     }
 
     private void playCurrentTrack() {
@@ -234,7 +244,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
     }
 
     public void onComplete(MediaPlayer mp) {
-
+        // stop the foreground mode, but keep the notification active
+        stopForeground(false);
+        // cancel the notification
+        cancelAllNotifications();
     }
 
 
@@ -332,7 +345,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
             @Override
             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                 //customNotification();
-                customNotification2(bitmap, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
+                customNotification(bitmap, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
 /*
                 // Prepare intent which is triggered if the
                 // notification is selected
@@ -403,16 +416,19 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         return PendingIntent.getService(getApplicationContext(), requestCode, serviceIntent, 0);
     }
 
-    public void customNotification2(Bitmap bigIcon, String trackname, String artistname, boolean isPlaying) {
-        Notification foregroundNote;
-
-        // Open NotificationView Class on Notification Click
+    // Open PlayerActivity on Notification Click
+    private PendingIntent getRestoreIntent() {
         Intent restoreIntent = new Intent(getApplicationContext(), PlayerActivity.class);
         TopTracks restoremTopTracks = topTracks.createClone();
         restoremTopTracks.command = Constants.ACTION_NONE;
         restoreIntent.putExtra(Constants.EXTRA_TOP_TRACKS, topTracks);
         restoreIntent.putExtra(Constants.EXTRA_PLAYER_COMMAND, Constants.ACTION_NONE);
         final PendingIntent pi = PendingIntent.getActivity(getApplicationContext(), 0, restoreIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pi;
+    }
+
+    public void customNotification(Bitmap bigIcon, String trackname, String artistname, boolean isPlaying) {
+        Notification foregroundNote;
 
         RemoteViews bigView = new RemoteViews(getApplicationContext().getPackageName(), R.layout.notification);
 
@@ -451,17 +467,21 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
         Notification.Builder mNotifyBuilder = new Notification.Builder(this);
         foregroundNote = mNotifyBuilder.setContentTitle(trackname)
                 .setContentText(artistname)
-                .setContentIntent(pi)
+                .setContentIntent(getRestoreIntent())
                 .setSmallIcon(R.drawable.ic_play_arrow_black_24dp)
                 .setLargeIcon(bigIcon)
                 .build();
 
-        foregroundNote.bigContentView = bigView;
+        // the user can toggle in the settings if she wants notification controls
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean showNotificationControls = sharedPref.getBoolean(Constants.PREFERENCE_KEY_SHOW_NOTIFICATIONS, true);
+        if(showNotificationControls) {
+            foregroundNote.bigContentView = bigView;
+        }
 
         // now show notification..
         NotificationManager mNotifyManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         mNotifyManager.notify(1, foregroundNote);
     }
-
 
 }

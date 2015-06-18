@@ -95,6 +95,14 @@ public class MediaPlayerStateWrapper {
         } else throw new RuntimeException(currentState.name());
     }
 
+    public boolean isStopped() {
+        return (currentState == State.STOPPED);
+    }
+
+    public boolean isPlaybackComplete() {
+        return (currentState == State.PLAYBACK_COMPLETE);
+    }
+
     public boolean isPlayingSave() {
         if (currentState != State.ERROR) {
             return mPlayer.isPlaying();

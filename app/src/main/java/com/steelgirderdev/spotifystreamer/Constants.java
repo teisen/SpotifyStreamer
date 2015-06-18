@@ -19,11 +19,13 @@ public class Constants {
     public static final String SPOTIFY_API_ARTIST_SEARCH_LIMIT = "50";
     public static final String SPOTIFY_API_TOPTRACKS_SEARCH_COUNTRY_PARAMNAME = "country";
     public static final String PREFERENCE_KEY_COUNTRY = "country";
+    public static final String PREFERENCE_KEY_SHOW_NOTIFICATIONS = "show_notification_controls";
     public static final String WIFI_LOCK_KEY = "wifiLock";
     public static final int NOTIFICATION_ID_PLAYER = 1;
 
     public static final String BROADCAST_INTENT_TRACKUIUPDATE = "BroadCastTRACKUIUPDATE";
     public static final String BROADCAST_INTENT_TRACKSTARTED = "BroadCastTRACKSTARTED";
+    public static final String BROADCAST_INTENT_STOPPED = "BroadCastSTOPPED";
 
     //actions
     public static final String ACTION_PLAY_IF_NOT_PLAYING = "com.steelgirderdev.spotifystreamer.service.action.PLAYIFNOTPLAYING";

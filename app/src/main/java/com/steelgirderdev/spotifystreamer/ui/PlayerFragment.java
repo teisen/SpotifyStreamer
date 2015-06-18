@@ -295,6 +295,9 @@ public class PlayerFragment extends DialogFragment {
         mContext.startService(serviceIntent);
     }
 
+
+
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         topTracks.command = Constants.ACTION_NONE;

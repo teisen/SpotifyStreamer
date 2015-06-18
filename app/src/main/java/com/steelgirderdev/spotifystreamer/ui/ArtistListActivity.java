@@ -108,6 +108,7 @@ implements ArtistListFragment.Callbacks {
                 sendIntent.putExtra(Intent.EXTRA_TEXT, topTracks.getShareString());
                 sendIntent.setType("text/plain");
                 setShareIntent(sendIntent);
+                // set the button to return to player
             }
         };
 
