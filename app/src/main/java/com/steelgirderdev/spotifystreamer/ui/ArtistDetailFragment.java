@@ -1,6 +1,7 @@
 package com.steelgirderdev.spotifystreamer.ui;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -137,15 +138,25 @@ public class ArtistDetailFragment extends Fragment {
     public void loadTrackList(Artist pArtist) {
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + " loadTrackList called");
         mArtist = pArtist;
-        showProgressDialog(mArtist.artistname);
         FetchTopTracksTask task = new FetchTopTracksTask(this);
         task.execute(mArtist.spotifyId);
         actionBarSetup(mArtist);
     }
 
-    public void showProgressDialog(String searchString) {
+    public void showProgressDialog(final FetchTopTracksTask fetchTopTracksTask, String searchString) {
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + " showProgressDialog called");
-        progress = ProgressDialog.show(getActivity(), getString(R.string.progress_dialog_searching), getString(R.string.progress_dialog_loading_top_tracks_of, searchString), true);
+        progress = ProgressDialog.show(getActivity(),
+                getString(R.string.progress_dialog_searching),
+                getString(R.string.progress_dialog_loading_top_tracks_of, searchString),
+                true,
+                true,
+                new DialogInterface.OnCancelListener(){
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        fetchTopTracksTask.cancel(true);
+                        //finish();
+                    }
+                });
     }
     public void hideProgressDialog() {
         Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + " hideProgressDialog called");
@@ -178,6 +189,12 @@ public class ArtistDetailFragment extends Fragment {
         public FetchTopTracksTask(ArtistDetailFragment topTracksFragment) {
             Log.d(Constants.LOG_TAG, this.getClass().getSimpleName() + " FetchTopTracksTask called");
             this.fragment = topTracksFragment;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressDialog(this, mArtist.artistname);
         }
 
         @Override

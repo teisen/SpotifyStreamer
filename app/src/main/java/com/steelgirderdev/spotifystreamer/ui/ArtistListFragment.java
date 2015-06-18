@@ -3,6 +3,7 @@ package com.steelgirderdev.spotifystreamer.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -173,7 +174,7 @@ public class ArtistListFragment extends ListFragment {
             UIUtil.toastIt(getActivity(), searchToast, getString(R.string.error_search_cannot_be_empty));
             return;
         }
-        showProgressDialog(searchString);
+
         FetchArtistsTask task = new FetchArtistsTask(this);
         task.execute(searchString);
         // Hide the keyboard after search
@@ -181,8 +182,20 @@ public class ArtistListFragment extends ListFragment {
         imm.hideSoftInputFromWindow(searchEditText.getWindowToken(), 0);
     }
 
-    public void showProgressDialog(String searchString) {
-        progress = ProgressDialog.show(getActivity(), getString(R.string.progress_dialog_searching), getString(R.string.progress_dialog_searching_for, searchString), true);
+    public void showProgressDialog(final FetchArtistsTask fetchArtistsTask, String searchString) {
+        progress = ProgressDialog.show(
+                getActivity(),
+                getString(R.string.progress_dialog_searching),
+                getString(R.string.progress_dialog_searching_for, searchString),
+                true,
+                true,
+                new DialogInterface.OnCancelListener(){
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                        fetchArtistsTask.cancel(true);
+                        //finish();
+                    }
+                });
     }
     public void hideProgressDialog() {
         if(progress != null){
@@ -196,6 +209,12 @@ public class ArtistListFragment extends ListFragment {
 
         public FetchArtistsTask(ArtistListFragment artistSearchFragment) {
             this.artistSearchFragment = artistSearchFragment;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            showProgressDialog(this, searchString);
         }
 
         @Override
@@ -239,7 +258,7 @@ public class ArtistListFragment extends ListFragment {
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                artistSearchFragment.hideProgressDialog();
+                hideProgressDialog();
             }
 
         }
