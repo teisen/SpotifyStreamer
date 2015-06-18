@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Spotify Streamer</string>
+    <string name="app_name" translatable="false">Spotify Streamer</string>
     <string name="button_search_artists_text">Search</string>
     <string name="editText_artist_hint">Artist name</string>
     <string name="action_settings">Settings</string>
@@ -12,7 +12,7 @@
     <string name="title_activity_settings">Settings</string>
     <string name="error_search_cannot_be_empty">The search can not be empty</string>
     <string name="setting_country_name">Country</string>
-    <string name="setting_country_desc">Country code (2 letters - ISO 3166-1)</string>
+    <string name="setting_country_desc">Country code (2 letters – ISO 3166–1)</string>
     <string name="setting_country_default">US</string>
 
     <string name="title_activity_player">Spotify Streamer</string>
@@ -22,11 +22,7 @@
     <string name="play_pause">Pause</string>
     <string name="skip_next">Next</string>
     <string name="background_image_str">Song Image</string>
-    <string name="title_artist_list">Artist2s</string>
-    <string name="title_artist_detail">Artist2 Detail</string>
-    <string name="customnotificationtitle">TODO-TITLE</string>
-    <string name="customnotificationtext">TODO-text</string>
-    <string name="customnotificationticker">TODO-ticker</string>
+    <string name="title_artist_detail" translatable="false"></string>
     <string name="share">Share</string>
     <string name="show_notification_controls_title">Notification Controls</string>
     <string name="show_notification_controls_summary">Show player control buttons on notification</string>

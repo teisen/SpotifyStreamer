@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-
 import com.steelgirderdev.spotifystreamer.adapter.TopTracksAdapter;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
@@ -34,7 +33,7 @@ import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Tracks;
 
 /**
- * A fragment representing a single Artist2 detail screen.
+ * A fragment representing a single Artist detail screen.
  * This fragment is either contained in a {@link ArtistListActivity}
  * in two-pane mode (on tablets) or a {@link ArtistDetailActivity}
  * on handsets.

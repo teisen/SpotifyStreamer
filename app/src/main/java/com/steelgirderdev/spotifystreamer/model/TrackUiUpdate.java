@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 /**
  * Created by teisentraeger on 6/8/2015.
+ * Holds a small parcel with just enough info to update the player UI
  */
 public class TrackUiUpdate implements Parcelable {
 

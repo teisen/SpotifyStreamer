@@ -1,23 +1,17 @@
 package com.steelgirderdev.spotifystreamer.adapter;
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-import com.steelgirderdev.spotifystreamer.ui.ArtistListActivity;
 import com.steelgirderdev.spotifystreamer.model.Artist;
-import com.steelgirderdev.spotifystreamer.ui.ArtistDetailActivity;
-import com.steelgirderdev.spotifystreamer.ui.ArtistDetailFragment;
 
 import java.util.List;
 

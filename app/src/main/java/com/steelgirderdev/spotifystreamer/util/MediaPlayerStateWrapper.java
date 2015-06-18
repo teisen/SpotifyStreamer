@@ -1,16 +1,6 @@
 package com.steelgirderdev.spotifystreamer.util;
 
-import java.io.IOException;
-import java.lang.reflect.Method;
-import java.util.AbstractCollection;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-
 import android.content.Context;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnBufferingUpdateListener;
 import android.media.MediaPlayer.OnCompletionListener;
@@ -20,6 +10,9 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.util.Log;
 
 import com.steelgirderdev.spotifystreamer.service.MediaPlayerService;
+
+import java.io.IOException;
+import java.util.EnumSet;
 
 /**
  * Source: https://gist.github.com/bitops/2523027

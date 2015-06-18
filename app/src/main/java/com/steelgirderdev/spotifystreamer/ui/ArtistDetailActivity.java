@@ -2,17 +2,13 @@ package com.steelgirderdev.spotifystreamer.ui;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Parcelable;
-import android.support.v7.app.ActionBarActivity;
-
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 
 /**
- * An activity representing a single Artist2 detail screen. This
+ * An activity representing a single Artist detail screen. This
  * activity is only used on handset devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
  * in a {@link ArtistListActivity}.

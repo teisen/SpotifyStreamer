@@ -8,6 +8,7 @@ import com.steelgirderdev.spotifystreamer.R;
 /**
  * Created by teisentraeger on 6/2/2015.
  * http://developer.android.com/guide/topics/ui/settings.html#Fragment
+ * A simple settings fragment
  */
 public class SettingsFragment extends PreferenceFragment {
     @Override

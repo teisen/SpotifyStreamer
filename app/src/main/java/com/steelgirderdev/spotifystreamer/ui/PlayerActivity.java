@@ -1,20 +1,12 @@
 package com.steelgirderdev.spotifystreamer.ui;
 
-import android.content.Intent;
 import android.media.MediaPlayer;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import com.steelgirderdev.spotifystreamer.Constants;
-import com.steelgirderdev.spotifystreamer.R;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 
 /**
- * Activity that shows the
+ * Activity that shows the Player - only used by Handsets
  */
 public class PlayerActivity extends ActionBarActivity {
 

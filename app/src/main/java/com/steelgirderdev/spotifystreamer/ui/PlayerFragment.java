@@ -7,13 +7,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.os.Handler;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,12 +25,12 @@ import android.widget.Toast;
 import com.squareup.picasso.Picasso;
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
+import com.steelgirderdev.spotifystreamer.model.TopTracks;
 import com.steelgirderdev.spotifystreamer.model.TrackUiUpdate;
 import com.steelgirderdev.spotifystreamer.service.MediaPlayerService;
-import com.steelgirderdev.spotifystreamer.model.TopTracks;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A fragment which displays the Player
  */
 public class PlayerFragment extends DialogFragment {
 

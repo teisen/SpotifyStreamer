@@ -18,14 +18,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 import com.steelgirderdev.spotifystreamer.model.TopTracks;
 
 /**
- * An activity representing a list of Artist2s. This activity
+ * An activity representing a list of Artists. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
  * lead to a {@link ArtistDetailActivity} representing

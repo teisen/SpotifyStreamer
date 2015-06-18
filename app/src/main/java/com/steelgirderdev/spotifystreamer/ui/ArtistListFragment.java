@@ -3,7 +3,6 @@ package com.steelgirderdev.spotifystreamer.ui;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -22,7 +21,6 @@ import android.widget.Toast;
 
 import com.steelgirderdev.spotifystreamer.Constants;
 import com.steelgirderdev.spotifystreamer.R;
-
 import com.steelgirderdev.spotifystreamer.adapter.ArtistAdapter;
 import com.steelgirderdev.spotifystreamer.model.Artist;
 import com.steelgirderdev.spotifystreamer.util.UIUtil;
@@ -36,7 +34,7 @@ import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.ArtistsPager;
 
 /**
- * A list fragment representing a list of Artist2s. This fragment
+ * A list fragment representing a list of Artists. This fragment
  * also supports tablet devices by allowing list items to be given an
  * 'activated' state upon selection. This helps indicate which item is
  * currently being viewed in a {@link ArtistDetailFragment}.

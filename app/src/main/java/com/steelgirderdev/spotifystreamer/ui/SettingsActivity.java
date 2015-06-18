@@ -6,6 +6,7 @@ import android.os.Bundle;
 /**
  * Created by teisentraeger on 6/2/2015.
  * http://developer.android.com/guide/topics/ui/settings.html#Fragment
+ * A simple activity to hold the settings
  */
 public class SettingsActivity extends Activity {
     @Override

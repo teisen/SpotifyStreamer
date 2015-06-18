@@ -33,6 +33,10 @@ import com.steelgirderdev.spotifystreamer.util.MediaPlayerStateWrapper;
 
 import java.util.Set;
 
+/**
+ * Service which is started by the PlayerFragment. It is communicating with the MediaPlayer
+ * and is responsible for creating the notifications and updating the menu with applicable options
+ */
 public class MediaPlayerService extends Service implements MediaPlayer.OnErrorListener {
     private LocalBroadcastManager broadcaster;
     private ProgressHandler progressHandler;
@@ -342,7 +346,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnErrorLi
      */
     public void createNotification(final boolean isPlaying) {
 
-        // first create the notification with a placeholder image until picasso is done loading
+        // first create the notification with a placeholder image until picasso is done loading.
+        // sometimes it never loads, not sure why.
         customNotification(null, topTracks.getCurrentTrack().trackname, topTracks.artist.artistname, isPlaying);
 
         Target target2 = new Target() {

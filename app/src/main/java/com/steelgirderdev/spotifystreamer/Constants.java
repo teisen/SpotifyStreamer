@@ -9,7 +9,6 @@ public class Constants {
     public static final String EXTRA_TOP_TRACKS = "TopTracks";
     public static final String EXTRA_ARTIST = "Artist";
     public static final String EXTRA_SEEK_TO_MILLIS = "SeekToMs";
-    public static final String EXTRA_PLAYER_COMMAND = "PlayerCommand";
     public static final String STATE_ARTIST_NAME = "artistName";
     public static final String PARCEL_KEY_TOPTRACKS_LIST = "toptracksList";
     public static final String PARCEL_KEY_TOPTRACKS = "toptracks";
@@ -21,11 +20,9 @@ public class Constants {
     public static final String PREFERENCE_KEY_COUNTRY = "country";
     public static final String PREFERENCE_KEY_SHOW_NOTIFICATIONS = "show_notification_controls";
     public static final String WIFI_LOCK_KEY = "wifiLock";
-    public static final int NOTIFICATION_ID_PLAYER = 1;
 
-    public static final String BROADCAST_INTENT_TRACKUIUPDATE = "BroadCastTRACKUIUPDATE";
-    public static final String BROADCAST_INTENT_TRACKSTARTED = "BroadCastTRACKSTARTED";
-    public static final String BROADCAST_INTENT_STOPPED = "BroadCastSTOPPED";
+    public static final String BROADCAST_INTENT_TRACKUIUPDATE = "com.steelgirderdev.spotifystreamer.broadcast.TRACKUIUPDATE";
+    public static final String BROADCAST_INTENT_TRACKSTARTED = "com.steelgirderdev.spotifystreamer.broadcast.TRACKSTARTED";
 
     //actions
     public static final String ACTION_PLAY_IF_NOT_PLAYING = "com.steelgirderdev.spotifystreamer.service.action.PLAYIFNOTPLAYING";
